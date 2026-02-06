@@ -1,0 +1,102 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\td4\\assets\\scripts\\uimanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\uimanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\td4\\assets\\scripts\\lapmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\lapmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\td4\\assets\\scripts\\checkpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\checkpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\td4\\assets\\scripts\\followplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\followplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\td4\\assets\\scripts\\carcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\carcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UIManager.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\UIManager.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\UIManager.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\UIManager.cs",
+              "RelativeToolTip": "Assets\\scripts\\UIManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-05T20:07:21.563Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "LapManager.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\LapManager.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\LapManager.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\LapManager.cs",
+              "RelativeToolTip": "Assets\\scripts\\LapManager.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAgwCIAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-30T16:05:07.103Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Checkpoint.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\Checkpoint.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\Checkpoint.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\Checkpoint.cs",
+              "RelativeToolTip": "Assets\\scripts\\Checkpoint.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-30T15:51:23.393Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "followPlayer.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\followPlayer.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\followPlayer.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\followPlayer.cs",
+              "RelativeToolTip": "Assets\\scripts\\followPlayer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-30T15:23:27.495Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "carController.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\carController.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\carController.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\carController.cs",
+              "RelativeToolTip": "Assets\\scripts\\carController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-30T14:58:15.226Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
