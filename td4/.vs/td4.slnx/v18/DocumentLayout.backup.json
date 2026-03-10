@@ -1,22 +1,42 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\",
+  "WorkspaceRootPath": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\td4\\assets\\scripts\\lapmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\lapmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\3dworlds\\td4\\assets\\scripts\\carmovement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\carmovement.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\td4\\assets\\scripts\\checkpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\checkpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\3dworlds\\td4\\assets\\scripts\\td3\\careffects.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\td3\\careffects.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\td4\\assets\\scripts\\followplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\followplayer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\3dworlds\\td4\\assets\\scripts\\td2\\lapmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\td2\\lapmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\td4\\assets\\scripts\\carcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\carcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\GameManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\scripts\\GameManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\3dworlds\\td4\\assets\\scripts\\td2\\aicontrols.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\td2\\aicontrols.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\3dworlds\\td4\\assets\\scripts\\playercontrol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\playercontrol.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\3dworlds\\td4\\assets\\scripts\\td2\\caridentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\td2\\caridentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\3dworlds\\td4\\assets\\scripts\\td1\\checkpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\td1\\checkpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|c:\\eit_emai\\creating virtual worlds\\unity\\racing game\\3dworlds\\td4\\assets\\scripts\\td3\\animationeventdispatcher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4CD19DA-EE08-5225-FB19-1D0DFA4113DD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\td3\\animationeventdispatcher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,58 +46,123 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "LapManager.cs",
-              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\LapManager.cs",
-              "RelativeDocumentMoniker": "Assets\\scripts\\LapManager.cs",
-              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\LapManager.cs",
-              "RelativeToolTip": "Assets\\scripts\\LapManager.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAuAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "CarEffects.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\TD3\\CarEffects.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\TD3\\CarEffects.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\TD3\\CarEffects.cs",
+              "RelativeToolTip": "Assets\\scripts\\TD3\\CarEffects.cs",
+              "ViewState": "AgIAAEYAAAAAAAAAAAAkwFcAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-30T16:05:07.103Z",
+              "WhenOpened": "2026-02-23T17:18:55.603Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Checkpoint.cs",
-              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\Checkpoint.cs",
-              "RelativeDocumentMoniker": "Assets\\scripts\\Checkpoint.cs",
-              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\Checkpoint.cs",
-              "RelativeToolTip": "Assets\\scripts\\Checkpoint.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAqAAAAAAAAAA==",
+              "DocumentIndex": 8,
+              "Title": "AnimationEventDispatcher.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\TD3\\AnimationEventDispatcher.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\TD3\\AnimationEventDispatcher.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\TD3\\AnimationEventDispatcher.cs",
+              "RelativeToolTip": "Assets\\scripts\\TD3\\AnimationEventDispatcher.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-30T15:51:23.393Z",
+              "WhenOpened": "2026-02-23T17:18:55.395Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "followPlayer.cs",
-              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\followPlayer.cs",
-              "RelativeDocumentMoniker": "Assets\\scripts\\followPlayer.cs",
-              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\followPlayer.cs",
-              "RelativeToolTip": "Assets\\scripts\\followPlayer.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABKAAAAAAAAAA==",
+              "Title": "LapManager.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\TD2\\LapManager.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\TD2\\LapManager.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\TD2\\LapManager.cs",
+              "RelativeToolTip": "Assets\\scripts\\TD2\\LapManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-30T15:23:27.495Z",
+              "WhenOpened": "2026-02-16T18:23:23.028Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Checkpoint.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\TD1\\Checkpoint.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\TD1\\Checkpoint.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\TD1\\Checkpoint.cs",
+              "RelativeToolTip": "Assets\\scripts\\TD1\\Checkpoint.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAABAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-16T18:19:32.607Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "CarIdentity.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\TD2\\CarIdentity.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\TD2\\CarIdentity.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\TD2\\CarIdentity.cs",
+              "RelativeToolTip": "Assets\\scripts\\TD2\\CarIdentity.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-16T18:18:18.272Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "PlayerControl.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\PlayerControl.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\PlayerControl.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\PlayerControl.cs",
+              "RelativeToolTip": "Assets\\scripts\\PlayerControl.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-16T07:14:28.801Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "carMovement.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\carMovement.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\carMovement.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\carMovement.cs",
+              "RelativeToolTip": "Assets\\scripts\\carMovement.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-16T07:34:51.575Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AIControls.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\TD2\\AIControls.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\TD2\\AIControls.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\TD2\\AIControls.cs",
+              "RelativeToolTip": "Assets\\scripts\\TD2\\AIControls.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-20T13:51:01.353Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "carController.cs",
-              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\carController.cs",
-              "RelativeDocumentMoniker": "Assets\\scripts\\carController.cs",
-              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\td4\\Assets\\scripts\\carController.cs",
-              "RelativeToolTip": "Assets\\scripts\\carController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAArAAAAAAAAAA==",
+              "Title": "GameManager.cs",
+              "DocumentMoniker": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\GameManager.cs",
+              "RelativeDocumentMoniker": "Assets\\scripts\\GameManager.cs",
+              "ToolTip": "C:\\EIT_EMAI\\Creating Virtual Worlds\\unity\\racing game\\3dWorlds\\td4\\Assets\\scripts\\GameManager.cs",
+              "RelativeToolTip": "Assets\\scripts\\GameManager.cs",
+              "ViewState": "AgIAAD0AAAAAAAAAAAAkwFQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-30T14:58:15.226Z",
+              "WhenOpened": "2026-02-23T17:13:15.395Z",
               "EditorCaption": ""
             }
           ]
