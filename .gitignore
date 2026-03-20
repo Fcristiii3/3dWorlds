@@ -1,3 +1,53 @@
-Library/
-Temp/
-UserSettings/
+# --- Unity Folders ---
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+[Uu]serSettings/
+
+# --- Asset store packages ---
+# Many developers prefer to ignore third-party assets to keep the repo small, 
+# but only do this if you have a way to restore them (like a package manager).
+# /[Aa]ssets/AssetStoreTools*
+
+# --- Auto-generated Visual Studio / IDE files ---
+[Aa]ssets/Plugins/Editor/JetBrains*
+.vs/
+.vscode/
+.gradle/
+ExportedObj/
+.consulo/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svclog
+*.pdb
+*.opendb
+*.VC.db
+
+# --- Unity Documentation & Debug ---
+/Assets/AddressableAssetsData/*/*.bin*
+/Assets/StreamingAssets/aa/*
+
+# --- OS Generated Files ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# --- Crashlytics / Bug Reporting ---
+crashlytics-build.properties
