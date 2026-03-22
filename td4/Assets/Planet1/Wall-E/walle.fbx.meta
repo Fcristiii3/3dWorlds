@@ -3,7 +3,57 @@ guid: 3918ae7df43643a4abdfcd174c12f023
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material
+    second: {fileID: 2100000, guid: 018e8f91d6e28ff40abf82f000d63836, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.004
+    second: {fileID: 2100000, guid: a3627008506a55c4988a8595a86853b7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: alb
+    second: {fileID: 2100000, guid: 641fc05f5c02b484294d2fbfa82ba0cc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: darker steel
+    second: {fileID: 2100000, guid: 74924511480e6be4790bf6c65ec2bf2e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: glass
+    second: {fileID: 2100000, guid: 8605bb9ee348e324a920100922c5d7b9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: hazard b&w
+    second: {fileID: 2100000, guid: 82252c0dc07832d41a811307f1c20832, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: negru
+    second: {fileID: 2100000, guid: 4e6bc845c5c83b340849793e53a1b0a6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rust
+    second: {fileID: 2100000, guid: 8f2a4bfb69433f04ea8cc10d71112591, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rust.001
+    second: {fileID: 2100000, guid: c003a65c0256e2041bc8debd11bc282f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: steel
+    second: {fileID: 2100000, guid: 1fff4353d8ec06a42a90d2e045f6faee, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -100,7 +150,7 @@ ModelImporter:
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 0
+  avatarSetup: 1
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0
