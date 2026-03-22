@@ -1,9 +1,14 @@
 fileFormatVersion: 2
-guid: 07e98685739c0d74c99ac77490fe6ad1
+guid: bc583dc4ee78f3f40839330b416fac99
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: rust
+    second: {fileID: 2100000, guid: 408eee0111fea4a4398f31182559cdd6, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -96,11 +101,11 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: f9369729791e31047a67bbd98fd4e400, type: 3}
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 2
+  avatarSetup: 1
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
   importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0
