@@ -17,6 +17,11 @@ public class BoidGameManager2D : MonoBehaviour
     public Color boidColor = new Color(0.35f, 0.75f, 1f, 1f);
     public BoidAgent2D.BoidControlMode boidControlMode = BoidAgent2D.BoidControlMode.ClassicHeuristic;
 
+    [Header("Training")]
+    public bool trainingMode;
+    public float matchDuration = 60f;
+    public float timeRemaining;
+
     [Header("Hunter")]
     public HunterController2D hunter;
     public bool hunterAutoControl;
@@ -24,7 +29,9 @@ public class BoidGameManager2D : MonoBehaviour
     [Header("UI")]
     public Text scoreText;
 
+    // References
     private readonly List<BoidAgent2D> boids = new List<BoidAgent2D>();
+    private readonly List<BoidAgent2D> graveyard = new List<BoidAgent2D>();
     public List<BoidAgent2D> Boids => boids;
     public Vector3 HunterPosition => hunter != null ? hunter.transform.position : Vector3.zero;
     public bool IsGameRunning { get; private set; }
@@ -35,6 +42,11 @@ public class BoidGameManager2D : MonoBehaviour
 
     private void Start()
     {
+        // Stop Unity from freezing the entire simulation when you click away!
+        Application.runInBackground = true;
+
+        ApplyTrainingModeDefaults();
+
         if (hunter == null)
         {
             hunter = FindObjectOfType<HunterController2D>();
@@ -49,6 +61,15 @@ public class BoidGameManager2D : MonoBehaviour
         StartGame();
     }
 
+    private void ApplyTrainingModeDefaults()
+    {
+        if (trainingMode)
+        {
+            boidControlMode = BoidAgent2D.BoidControlMode.MlAgent;
+            hunterAutoControl = true;
+        }
+    }
+
     public void StartGame()
     {
         if (IsGameRunning)
@@ -58,19 +79,50 @@ public class BoidGameManager2D : MonoBehaviour
 
         IsGameRunning = true;
         eatenCount = 0;
+        timeRemaining = matchDuration;
 
-        ClearAllBoids();
-        int spawnCount = Mathf.Max(2, startingBoidCount);
-        // #region agent log
-        DebugLog("run-2", "H3", "BoidGameManager2D.cs:66", "StartGame spawning boids", new Dictionary<string, object>
+        // Revive Boids from the graveyard!
+        for (int i = graveyard.Count - 1; i >= 0; i--)
         {
-            { "startingBoidCount", startingBoidCount },
-            { "spawnCount", spawnCount }
-        });
-        // #endregion
-        for (int i = 0; i < spawnCount; i++)
+            BoidAgent2D ghost = graveyard[i];
+            graveyard.RemoveAt(i);
+            if (ghost != null)
+            {
+                ghost.gameObject.SetActive(true);
+                boids.Add(ghost);
+            }
+        }
+
+        // Stutter Fix: Only spawn missing Boids instead of destroying and re-rendering 64 complex 3D objects!
+        int targetCount = Mathf.Max(2, startingBoidCount);
+        int needed = targetCount - boids.Count;
+        
+        for (int i = 0; i < needed; i++)
         {
             SpawnBoid();
+        }
+
+        // Instantly pool and randomize existing boids
+        foreach (var boid in boids)
+        {
+            if (boid == null) continue;
+            boid.transform.position = new Vector3(
+                Random.Range(worldMin.x, worldMax.x),
+                Random.Range(worldMin.y, worldMax.y),
+                0f
+            );
+            
+            Rigidbody2D boidRb = boid.GetComponent<Rigidbody2D>();
+            if (boidRb != null)
+            {
+                boidRb.linearVelocity = Random.insideUnitCircle.normalized * boid.moveSpeed;
+            }
+        }
+
+        // Normalize Hunter speed to perfectly match the boids max speed!
+        if (hunter != null && boids.Count > 0)
+        {
+            hunter.moveSpeed = boids[0].maxSpeed;
         }
 
         RefreshScoreUI();
@@ -101,8 +153,37 @@ public class BoidGameManager2D : MonoBehaviour
         }
     }
 
-    public void EatBoidsWithin(Vector2 center, float radius)
+    private void Update()
     {
+        if (!IsGameRunning) return;
+
+        timeRemaining -= Time.deltaTime;
+        RefreshScoreUI();
+
+        // End round completely if the time is up, OR if the hunter successfully caught all boids!
+        if (timeRemaining <= 0 || boids.Count == 0)
+        {
+            timeRemaining = 0;
+            EndRound();
+        }
+    }
+
+    private void EndRound()
+    {
+        IsGameRunning = false;
+        
+        if (hunter != null && hunter.TryGetComponent<Unity.MLAgents.Agent>(out var agent))
+        {
+            // End the hunter's ML-Agents episode explicitly so it learns from this 60s batch
+            agent.EndEpisode();
+        }
+
+        StartGame();
+    }
+
+    public int EatBoidsWithin(Vector2 center, float radius)
+    {
+        int eatenThisFrame = 0;
         float radiusSqr = radius * radius;
         for (int i = boids.Count - 1; i >= 0; i--)
         {
@@ -117,12 +198,24 @@ public class BoidGameManager2D : MonoBehaviour
             if (distanceSqr <= radiusSqr)
             {
                 boids.RemoveAt(i);
-                Destroy(boid.gameObject);
+                
+                // CRITICAL FIX: Destroying the Boid immediately after calling EndEpisode() severs the 
+                // socket connection to Python before Python realizes the Boid died! Python sits there 
+                // waiting 60 seconds for the dead Boid's next move, crashing the entire trainer!
+                boid.CaughtByHunter(); 
+                
+                // Instead of teleporting them endlessly, we deactivate them! This formally and elegantly
+                // unregisters the PyTorch socket hook, and puts them in our Graveyard pool!
+                boid.gameObject.SetActive(false);
+                graveyard.Add(boid);
+
                 eatenCount++;
+                eatenThisFrame++;
             }
         }
 
         RefreshScoreUI();
+        return eatenThisFrame;
     }
 
     private void SpawnBoid()
@@ -239,7 +332,8 @@ public class BoidGameManager2D : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = "Eaten: " + eatenCount + "   Remaining: " + boids.Count;
+            int seconds = Mathf.Max(0, Mathf.FloorToInt(timeRemaining));
+            scoreText.text = $"Eaten: {eatenCount}   Remaining: {boids.Count}   Time: {seconds}s";
         }
     }
 
@@ -346,7 +440,7 @@ public class BoidGameManager2D : MonoBehaviour
             text = scoreObject.AddComponent<Text>();
         }
 
-        text.text = "Eaten: 0   Remaining: 0";
+        text.text = "Eaten: 0   Remaining: 0   Time: 60s";
         text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
         text.fontSize = 28;

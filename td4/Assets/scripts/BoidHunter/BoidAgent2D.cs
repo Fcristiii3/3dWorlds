@@ -38,10 +38,44 @@ public class BoidAgent2D : Agent
     public float hunterDangerDistance = 1.5f;
     public BoidControlMode controlMode = BoidControlMode.ClassicHeuristic;
 
+    [Header("ML-Agents")]
+    public string behaviorName = "BoidAgent";
+    public int bufferObservationSize = 5;
+    public int bufferMaxObservations = 32;
+
     private BoidGameManager2D manager;
     private Rigidbody2D rb;
     private BufferSensorComponent neighborBufferSensor;
     private Vector2 velocity;
+
+    protected override void Awake()
+    {
+        BehaviorParameters behavior = GetComponent<BehaviorParameters>();
+        if (behavior == null) { behavior = gameObject.AddComponent<BehaviorParameters>(); }
+
+        behavior.BehaviorName = behaviorName;
+        behavior.BrainParameters.VectorObservationSize = 5;
+        behavior.BrainParameters.NumStackedVectorObservations = 1;
+        behavior.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(3);
+
+        DecisionRequester requester = GetComponent<DecisionRequester>();
+        if (requester == null) { requester = gameObject.AddComponent<DecisionRequester>(); }
+
+        requester.DecisionPeriod = 5; // Reduced from 1 to stop extreme lag
+        requester.TakeActionsBetweenDecisions = true;
+
+        base.Awake();
+    }
+
+    public override void Initialize()
+    {
+        neighborBufferSensor = GetComponent<BufferSensorComponent>();
+        if (neighborBufferSensor != null)
+        {
+            neighborBufferSensor.ObservableSize = bufferObservationSize;
+            neighborBufferSensor.MaxNumObservables = bufferMaxObservations;
+        }
+    }
 
     public void Initialize(BoidGameManager2D boidManager, Vector2 startDirection)
     {
@@ -53,7 +87,11 @@ public class BoidAgent2D : Agent
 
         if (controlMode == BoidControlMode.MlAgent)
         {
-            EnsureDecisionComponents();
+            BehaviorParameters behavior = GetComponent<BehaviorParameters>();
+            if (behavior != null)
+            {
+                behavior.BehaviorType = manager.trainingMode ? BehaviorType.Default : BehaviorType.HeuristicOnly;
+            }
         }
     }
 
@@ -164,6 +202,35 @@ public class BoidAgent2D : Agent
             float delta = Mathf.DeltaAngle(rb.rotation, desiredAngle);
             float rotateInput = Mathf.Clamp(delta / 45f, -1f, 1f);
             ApplySteeringAndRewards(steering, rotateInput);
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (manager == null || !manager.IsGameRunning || rb == null) return;
+
+        Vector2 pos = rb.position;
+        Vector2 vel = rb.linearVelocity;
+        bool outOfBounds = false;
+
+        // Strictly enforce bounds after Physics engine ticks
+        if (pos.x < manager.worldMin.x) { pos.x = manager.worldMin.x; vel.x = Mathf.Abs(vel.x); outOfBounds = true; }
+        else if (pos.x > manager.worldMax.x) { pos.x = manager.worldMax.x; vel.x = -Mathf.Abs(vel.x); outOfBounds = true; }
+
+        if (pos.y < manager.worldMin.y) { pos.y = manager.worldMin.y; vel.y = Mathf.Abs(vel.y); outOfBounds = true; }
+        else if (pos.y > manager.worldMax.y) { pos.y = manager.worldMax.y; vel.y = -Mathf.Abs(vel.y); outOfBounds = true; }
+
+        if (outOfBounds)
+        {
+            rb.position = pos;
+            rb.linearVelocity = vel;
+            velocity = vel;
+            
+            // Teach the ML Agent that escaping the screen is a bad idea
+            if (controlMode == BoidControlMode.MlAgent) 
+            {
+                AddReward(-0.05f); 
+            }
         }
     }
 
@@ -286,10 +353,6 @@ public class BoidAgent2D : Agent
         }
 
         velocity = rb.linearVelocity;
-        Vector2 nextPosition = rb.position;
-        manager.ClampAndBounce(ref nextPosition, ref velocity);
-        rb.position = nextPosition;
-        rb.linearVelocity = velocity;
 
         if (rb.linearVelocity.sqrMagnitude > 0.01f)
         {
@@ -297,41 +360,74 @@ public class BoidAgent2D : Agent
             rb.MoveRotation(angle);
         }
 
-        float hunterDistance = Vector2.Distance(transform.position, manager.HunterPosition);
-        float flockDistance = Vector2.Distance(transform.position, GetFlockCenter(transform.position));
-        if (flockDistance <= flockRewardDistance)
-        {
-            AddReward(0.1f);
-        }
-
-        if (hunterDistance < hunterDangerDistance)
-        {
-            AddReward(-1f);
-        }
-
-        AddReward(-0.01f);
+        EvaluateRewards(velocity);
     }
 
-    private void EnsureDecisionComponents()
+    private void EvaluateRewards(Vector2 currentVelocity)
     {
-        BehaviorParameters behavior = GetComponent<BehaviorParameters>();
-        if (behavior == null)
+        Vector2 currentPosition = transform.position;
+        Vector2 toHunter = (Vector2)manager.HunterPosition - currentPosition;
+        float distanceToHunter = toHunter.magnitude;
+
+        // 1. Penalize Hunter Proximity
+        if (distanceToHunter < hunterDangerDistance)
         {
-            behavior = gameObject.AddComponent<BehaviorParameters>();
+            float penalty = 1f - (distanceToHunter / hunterDangerDistance);
+            AddReward(-penalty * 0.05f); // Scale penalty
+        }
+        else 
+        {
+            AddReward(0.005f); // Small survival reward
         }
 
-        behavior.BehaviorType = BehaviorType.HeuristicOnly;
-        behavior.BrainParameters.VectorObservationSize = 5;
-        behavior.BrainParameters.NumStackedVectorObservations = 1;
-        behavior.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(3);
+        // 2. Calculate ideal flocking vectors for rewards
+        List<BoidAgent2D> allBoids = manager.Boids;
+        Vector2 separation = Vector2.zero;
+        Vector2 alignment = Vector2.zero;
+        int neighborCount = 0;
 
-        DecisionRequester requester = GetComponent<DecisionRequester>();
-        if (requester == null)
+        for (int i = 0; i < allBoids.Count; i++)
         {
-            requester = gameObject.AddComponent<DecisionRequester>();
+            BoidAgent2D other = allBoids[i];
+            if (other == this || other == null) continue;
+
+            Vector2 offset = (Vector2)other.transform.position - currentPosition;
+            float distance = offset.magnitude;
+            
+            if (distance > neighborRadius || distance <= 0.0001f) continue;
+            
+            neighborCount++;
+            alignment += other.velocity.sqrMagnitude > 0.01f ? other.velocity.normalized : Vector2.zero;
+
+            if (distance < separationRadius)
+            {
+                separation -= offset / Mathf.Max(distance, 0.05f);
+            }
         }
 
-        requester.DecisionPeriod = 1;
-        requester.TakeActionsBetweenDecisions = true;
+        if (neighborCount > 0)
+        {
+            alignment /= neighborCount;
+
+            // Reward Alignment
+            float alignmentMatch = Vector2.Dot(currentVelocity.normalized, alignment.normalized);
+            if (alignmentMatch > 0.5f) AddReward(alignmentMatch * 0.01f);
+
+            // Reward Separation
+            if (separation.sqrMagnitude > 0.01f)
+            {
+                float separationMatch = Vector2.Dot(currentVelocity.normalized, separation.normalized);
+                if (separationMatch > 0.5f) AddReward(separationMatch * 0.01f);
+            }
+
+            // Reward Cohesion (staying close to flock center)
+            float flockDistance = Vector2.Distance(currentPosition, GetFlockCenter(currentPosition));
+            if (flockDistance <= flockRewardDistance)
+            {
+                AddReward(0.01f);
+            }
+        }
     }
+
+
 }
