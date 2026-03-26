@@ -7,6 +7,9 @@ public class DropRoomTrigger : MonoBehaviour
     public Animator characterAnimator;
     public string animationTriggerName = "WakeUp";
 
+    [Header("The Audio")]
+    public AudioSource roomSound; // <-- New slot for your speaker!
+
     [Header("The Next Trapdoor")]
     public GameObject floorToDrop;
     
@@ -20,6 +23,13 @@ public class DropRoomTrigger : MonoBehaviour
         if (!hasTriggered && other.CompareTag("Player"))
         {
             hasTriggered = true;
+
+            // 0. Play the sound the exact millisecond they hit the floor!
+            if (roomSound != null)
+            {
+                roomSound.Play();
+            }
+
             StartCoroutine(RoomSequence());
         }
     }

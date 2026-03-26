@@ -37,6 +37,12 @@ public class FPSController : MonoBehaviour
         float moveZ = Input.GetAxis("Vertical");
 
         Vector3 move = transform.right * moveX + transform.forward * moveZ;
+        
+        // --- THE NEW FIX ---
+        // This stops the vector from ever growing longer than 1!
+        move = Vector3.ClampMagnitude(move, 1f); 
+        // -------------------
+
         controller.Move(move * walkSpeed * Time.deltaTime);
 
         // 3. Gravity (The Trapdoor Mechanic)
