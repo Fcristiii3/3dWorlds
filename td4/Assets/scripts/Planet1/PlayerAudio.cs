@@ -27,15 +27,12 @@ public class PlayerAudio : MonoBehaviour
 
     void Update()
     {
-        // Calculate exact distance moved on the flat floor this frame
         Vector3 currentFlatPos = new Vector3(transform.position.x, 0, transform.position.z);
         Vector3 lastFlatPos = new Vector3(lastPosition.x, 0, lastPosition.z);
         float distanceMoved = Vector3.Distance(currentFlatPos, lastFlatPos);
         
         lastPosition = transform.position;
 
-        // 1. THE LANDING SENSOR
-        if (controller.isGrounded && wasInAir)
         {
             audioSource.pitch = 1f; 
             if (landingSound != null) audioSource.PlayOneShot(landingSound);
@@ -47,13 +44,10 @@ public class PlayerAudio : MonoBehaviour
             wasInAir = true; 
         }
 
-        // 2. THE FOOTSTEP SENSOR (Distance Based)
         if (controller.isGrounded && distanceMoved > 0.001f)
         {
-            // Add the tiny bit we moved this frame to our total distance
             distanceTraveled += distanceMoved;
             
-            // Did we finally walk far enough to complete a full step?
             if (distanceTraveled >= stepDistance)
             {
                 audioSource.pitch = Random.Range(0.85f, 1.15f);
@@ -63,7 +57,6 @@ public class PlayerAudio : MonoBehaviour
                 
                 isLeftFoot = !isLeftFoot;
                 
-                // Reset the distance counter for the next step
                 distanceTraveled = 0f; 
             }
         }

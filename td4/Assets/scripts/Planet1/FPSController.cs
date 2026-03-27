@@ -32,20 +32,18 @@ public class FPSController : MonoBehaviour
         playerCamera.transform.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
         transform.Rotate(Vector3.up * mouseX);
 
-        // MOVEMENT
+        // movement
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
         Vector3 move = transform.right * moveX + transform.forward * moveZ;
         
-        // --- THE NEW FIX ---
-        // This stops the vector from ever growing longer than 1!
+        // for diagonal movement
         move = Vector3.ClampMagnitude(move, 1f); 
-        // -------------------
 
         controller.Move(move * walkSpeed * Time.deltaTime);
 
-        // 3. Gravity (The Trapdoor Mechanic)
+        // gravity
         if (controller.isGrounded && velocity.y < 0)
         {
             velocity.y = -2f; // stick to the floor

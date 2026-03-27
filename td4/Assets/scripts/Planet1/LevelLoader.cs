@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // <-- CRITICAL: This is Unity's teleporter!
+using UnityEngine.SceneManagement;
 
 public class LevelLoader : MonoBehaviour
 {
@@ -7,7 +7,6 @@ public class LevelLoader : MonoBehaviour
     [Tooltip("Type the EXACT name of your 2nd game's scene here!")]
     public string nameOfNextScene;
 
-    // The button will press this function
     public void LoadNextGame()
     {
         Debug.Log("Teleporting to: " + nameOfNextScene);

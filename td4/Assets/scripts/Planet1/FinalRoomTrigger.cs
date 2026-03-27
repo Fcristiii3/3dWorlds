@@ -19,15 +19,12 @@ public class FinalRoomTrigger : MonoBehaviour
         {
             hasTriggered = true;
 
-            // 1. Wake up Wall-E
             if (walleAnimator != null) walleAnimator.SetTrigger(animationTriggerName);
             
-            // 2. Wake up Eve
             if (eveAnimator != null) eveAnimator.SetTrigger(animationTriggerName);
 
             if (ballAnimator != null) ballAnimator.SetTrigger(animationTriggerName);
 
-            // 3. Play the creepy laughing sound
             if (creepySound != null) creepySound.Play();
         }
     }

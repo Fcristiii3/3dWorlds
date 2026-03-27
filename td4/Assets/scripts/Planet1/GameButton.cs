@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.Events; // <-- 1. We added this to use Unity Events!
+using UnityEngine.Events;
 using System.Collections;
 
 public class GameButton : MonoBehaviour
@@ -9,7 +9,7 @@ public class GameButton : MonoBehaviour
     public float pushDepth = 0.1f; 
 
     [Header("What happens when pressed?")]
-    public UnityEvent onButtonPressed; // <-- 2. This creates the magic list in your Inspector!
+    public UnityEvent onButtonPressed;
 
     private Vector3 originalPosition;
     private bool isPushing = false;
@@ -32,16 +32,12 @@ public class GameButton : MonoBehaviour
         isPushing = true;
         if (clickSound != null) clickSound.Play();
 
-        // Push in
         transform.localPosition = originalPosition - new Vector3(pushDepth, 0f, 0f);
         yield return new WaitForSeconds(0.2f);
 
-        // Use this if it pops OUT towards you!
         transform.localPosition = originalPosition + new Vector3(pushDepth, 0f, 0f);
 
-        // --- 3. THIS FIRES WHATEVER YOU PUT IN THE INSPECTOR LIST! ---
         onButtonPressed.Invoke();
-        // -------------------------------------------------------------
 
         isPushing = false;
     }

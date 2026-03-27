@@ -38,32 +38,23 @@ public class HorrorEventTrigger : MonoBehaviour
 
     IEnumerator ExecuteTrapSequence()
     {
-        // 1. Trap them
         if (invisibleBlockerWall != null) invisibleBlockerWall.SetActive(true);
         
-        // 2. KILL THE FLASHLIGHT!
         if (playerFlashlight != null) playerFlashlight.SetActive(false);
         
-        // 3. Tell the sound to play in 0.5 seconds (This does NOT pause the script!)
         if (scareSound != null) scareSound.PlayDelayed(soundDelay);
 
-        // 4. Wait in the darkness on our original timeline
         yield return new WaitForSeconds(pauseBeforeScare);
 
-        // 5. Wake the flower up IN THE PITCH BLACK
         if (flowerModel != null) flowerModel.SetActive(true);
         if (flowerAnimator != null) flowerAnimator.SetTrigger("PlayScare");
 
-        // 6. WAIT while the flower animates in the dark...
         yield return new WaitForSeconds(lightDelay);
 
-        // 7. SNAP THE FLASHLIGHT BACK ON to reveal the monster!
         if (playerFlashlight != null) playerFlashlight.SetActive(true);
 
-        // 8. Wait for the scare to finish
         yield return new WaitForSeconds(fallDelay);
 
-        // 9. DROP THE FLOOR!
         if (floorToDestroy != null) floorToDestroy.SetActive(false);
     }
 }
