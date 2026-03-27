@@ -3901,7 +3901,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7407a69751b972b40a6e4881927e38bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelLoader
-  nameOfNextScene: SampleScene
+  nameOfNextScene: Planet_02
 --- !u!1 &1054640263
 GameObject:
   m_ObjectHideFlags: 0
