@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
+using Unity.InferenceEngine;
+using Unity.MLAgents.Policies;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -21,6 +23,10 @@ public class BoidGameManager2D : MonoBehaviour
     public bool trainingMode;
     public float matchDuration = 60f;
     public float timeRemaining;
+
+    [Header("Inference (Drag .onnx files here when NOT training)")]
+    public ModelAsset boidBrain;
+    public ModelAsset hunterBrain;
 
     [Header("Hunter")]
     public HunterController2D hunter;
@@ -237,56 +243,15 @@ public class BoidGameManager2D : MonoBehaviour
         }
 
         Collider boidCollider = boidObject.GetComponent<Collider>();
-        // #region agent log
-        DebugLog("run-2", "H1", "BoidGameManager2D.cs:143", "SpawnBoid primitive collider state", new Dictionary<string, object>
-        {
-            { "has3dColliderBeforeDestroy", boidCollider != null },
-            { "colliderType", boidCollider != null ? boidCollider.GetType().Name : "none" }
-        });
-        // #endregion
         if (boidCollider != null)
         {
             DestroyImmediate(boidCollider);
         }
 
-        // #region agent log
-        DebugLog("run-2", "H1", "BoidGameManager2D.cs:154", "Post-destroy collider check", new Dictionary<string, object>
-        {
-            { "has3dColliderAfterDestroyCall", boidObject.GetComponent<Collider>() != null }
-        });
-        // #endregion
-
-        BoxCollider2D boidCollider2D = null;
-        try
-        {
-            boidCollider2D = boidObject.AddComponent<BoxCollider2D>();
-            // #region agent log
-            DebugLog("run-2", "H1", "BoidGameManager2D.cs:165", "Added BoxCollider2D", new Dictionary<string, object>
-            {
-                { "boxColliderAdded", boidCollider2D != null }
-            });
-            // #endregion
-        }
-        catch (System.Exception ex)
-        {
-            // #region agent log
-            DebugLog("run-2", "H1", "BoidGameManager2D.cs:173", "Failed adding BoxCollider2D", new Dictionary<string, object>
-            {
-                { "exceptionType", ex.GetType().Name },
-                { "exceptionMessage", ex.Message }
-            });
-            // #endregion
-            throw;
-        }
+        BoxCollider2D boidCollider2D = boidObject.AddComponent<BoxCollider2D>();
 
         if (boidCollider2D == null)
         {
-            // #region agent log
-            DebugLog("post-fix", "H1", "BoidGameManager2D.cs:182", "BoxCollider2D is null after AddComponent", new Dictionary<string, object>
-            {
-                { "has3dColliderNow", boidObject.GetComponent<Collider>() != null }
-            });
-            // #endregion
             return;
         }
 
@@ -299,16 +264,20 @@ public class BoidGameManager2D : MonoBehaviour
         boidRb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
         BoidAgent2D boid = boidObject.AddComponent<BoidAgent2D>();
-        // #region agent log
-        DebugLog("run-2", "H2", "BoidGameManager2D.cs:193", "BoidAgent2D add result", new Dictionary<string, object>
-        {
-            { "boidComponentNull", boid == null },
-            { "hasRigidbody2D", boidObject.GetComponent<Rigidbody2D>() != null },
-            { "hasCollider2D", boidObject.GetComponent<Collider2D>() != null }
-        });
-        // #endregion
         boid.controlMode = boidControlMode;
         boid.Initialize(this, Random.insideUnitCircle.normalized);
+
+        // Inference Mode: inject the trained .onnx brain if one is assigned
+        if (!trainingMode && boidBrain != null)
+        {
+            BehaviorParameters bp = boidObject.GetComponent<BehaviorParameters>();
+            if (bp != null)
+            {
+                bp.Model = boidBrain;
+                bp.BehaviorType = BehaviorType.InferenceOnly;
+            }
+        }
+
         boids.Add(boid);
     }
 
@@ -460,26 +429,6 @@ public class BoidGameManager2D : MonoBehaviour
 
     private void DebugLog(string runId, string hypothesisId, string location, string message, Dictionary<string, object> data)
     {
-        try
-        {
-            string dataJson = "{}";
-            if (data != null && data.Count > 0)
-            {
-                List<string> kvPairs = new List<string>();
-                foreach (KeyValuePair<string, object> kv in data)
-                {
-                    string value = kv.Value == null ? "null" : kv.Value.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"");
-                    kvPairs.Add("\"" + kv.Key + "\":\"" + value + "\"");
-                }
-
-                dataJson = "{" + string.Join(",", kvPairs) + "}";
-            }
-
-            string json = "{\"sessionId\":\"dddf96\",\"runId\":\"" + runId + "\",\"hypothesisId\":\"" + hypothesisId + "\",\"location\":\"" + location + "\",\"message\":\"" + message + "\",\"data\":" + dataJson + ",\"timestamp\":" + System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + "}";
-            File.AppendAllText("debug-dddf96.log", json + System.Environment.NewLine);
-        }
-        catch
-        {
-        }
+        // Performance Fix: Disabled synchronous disk logging to prevent start-up timeouts
     }
 }

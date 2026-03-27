@@ -67,7 +67,20 @@ public class HunterController2D : Agent
         }
         else
         {
-            if (behavior != null) behavior.BehaviorType = BehaviorType.HeuristicOnly;
+            // If a trained brain is assigned on the GameManager, use it for inference
+            if (manager != null && manager.hunterBrain != null)
+            {
+                if (behavior != null)
+                {
+                    behavior.Model = manager.hunterBrain;
+                    behavior.BehaviorType = BehaviorType.InferenceOnly;
+                }
+            }
+            else
+            {
+                // Fall back to manual WASD control if no brain is assigned
+                if (behavior != null) behavior.BehaviorType = BehaviorType.HeuristicOnly;
+            }
         }
     }
 
