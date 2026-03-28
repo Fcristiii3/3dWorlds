@@ -16,8 +16,21 @@ public class GameManager : MonoBehaviour
     public AudioClip lowBeep;
     public AudioClip highBeep;
 
+    private ProceduralFlyoverCamera proceduralFlyoverCamera;
+
     void Awake()
     {
+        Planet2RaceBootstrap planet2RaceBootstrap = GetComponent<Planet2RaceBootstrap>();
+        if (planet2RaceBootstrap == null)
+        {
+            planet2RaceBootstrap = FindFirstObjectByType<Planet2RaceBootstrap>();
+        }
+
+        if (planet2RaceBootstrap != null)
+        {
+            planet2RaceBootstrap.TryPrepare(this);
+        }
+
         // Start with the intro cinematic
         StartIntro();
     }
@@ -25,53 +38,125 @@ public class GameManager : MonoBehaviour
     public void StartIntro()
     {
         // 1. Disable player following so the animator can move the camera
-        followPlayerCamera.enabled = false;
-        // 2. Enable the animator to play the clip
-        cameraIntroAnimator.enabled = true;
-        // 3. Ensure cars are frozen during the cinematic
+        if (followPlayerCamera != null)
+        {
+            followPlayerCamera.enabled = false;
+        }
+
+        proceduralFlyoverCamera = ResolveProceduralFlyoverCamera();
+
+        // 2. Use the procedural flyover when available
+        if (proceduralFlyoverCamera != null && proceduralFlyoverCamera.BeginFlyover(this))
+        {
+            if (cameraIntroAnimator != null)
+            {
+                cameraIntroAnimator.enabled = false;
+            }
+
+            FreezePlayers(true);
+            return;
+        }
+
+        // 3. Fall back to the legacy animator if no procedural path is available
+        if (cameraIntroAnimator != null)
+        {
+            cameraIntroAnimator.enabled = true;
+        }
+
+        // 4. Ensure cars are frozen during the cinematic
         FreezePlayers(true);
+
+        if (cameraIntroAnimator == null)
+        {
+            StartCountdown();
+        }
     }
 
     // This method will be triggered by the Animation Event
     public void StartCountdown()
     {
-        // 1. Re-enable the follow script for racing
-        followPlayerCamera.enabled = true;
-        // 2. Disable the animator so it doesn't fight the follow script
-        cameraIntroAnimator.enabled = false;
+        // 1. Disable the animator so it doesn't fight the follow script
+        if (cameraIntroAnimator != null)
+        {
+            cameraIntroAnimator.enabled = false;
+        }
+
+        if (proceduralFlyoverCamera != null)
+        {
+            proceduralFlyoverCamera.StopFlyover();
+        }
+
+        // 2. Re-enable and snap the follow script for racing
+        if (followPlayerCamera != null)
+        {
+            followPlayerCamera.enabled = true;
+
+            followPlayer followCamera = followPlayerCamera as followPlayer;
+            if (followCamera != null)
+            {
+                followCamera.SnapToTarget();
+            }
+        }
 
         // 3. Begin the beep countdown
         StartCoroutine("Countdown");
+    }
+
+    private ProceduralFlyoverCamera ResolveProceduralFlyoverCamera()
+    {
+        if (proceduralFlyoverCamera != null)
+        {
+            return proceduralFlyoverCamera;
+        }
+
+        proceduralFlyoverCamera = FindFirstObjectByType<ProceduralFlyoverCamera>();
+        if (proceduralFlyoverCamera != null)
+        {
+            return proceduralFlyoverCamera;
+        }
+
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null)
+        {
+            proceduralFlyoverCamera = mainCamera.GetComponent<ProceduralFlyoverCamera>();
+        }
+
+        return proceduralFlyoverCamera;
     }
 
     IEnumerator Countdown()
     {
         yield return new WaitForSeconds(1);
         Debug.Log("3");
-        tricolorLights.SetProgress(1);
-        audioSource.PlayOneShot(lowBeep);
+        if (tricolorLights != null) tricolorLights.SetProgress(1);
+        if (audioSource != null && lowBeep != null) audioSource.PlayOneShot(lowBeep);
         yield return new WaitForSeconds(1);
         Debug.Log("2");
-        tricolorLights.SetProgress(2);
-        audioSource.PlayOneShot(lowBeep);
+        if (tricolorLights != null) tricolorLights.SetProgress(2);
+        if (audioSource != null && lowBeep != null) audioSource.PlayOneShot(lowBeep);
         yield return new WaitForSeconds(1);
         Debug.Log("1");
-        tricolorLights.SetProgress(3);
-        audioSource.PlayOneShot(lowBeep);
+        if (tricolorLights != null) tricolorLights.SetProgress(3);
+        if (audioSource != null && lowBeep != null) audioSource.PlayOneShot(lowBeep);
         yield return new WaitForSeconds(1);
         Debug.Log("GO");
-        tricolorLights.SetProgress(4);
-        audioSource.PlayOneShot(highBeep);
+        if (tricolorLights != null) tricolorLights.SetProgress(4);
+        if (audioSource != null && highBeep != null) audioSource.PlayOneShot(highBeep);
 
         StartRacing();
 
         yield return new WaitForSeconds(2f);
-        tricolorLights.SetAllLightsOff();
+        if (tricolorLights != null) tricolorLights.SetAllLightsOff();
     }
 
     public void StartRacing()
     {
         FreezePlayers(false);
+    }
+
+    public void SetRaceFrozen(bool freeze)
+    {
+        FreezePlayers(freeze);
     }
 
     void FreezePlayers(bool freeze)
@@ -82,6 +167,11 @@ public class GameManager : MonoBehaviour
         {
             playerControls.enabled = isEnabled;
             if (freeze) StopCar(playerControls.GetComponent<Rigidbody>());
+        }
+
+        if (aiControls == null)
+        {
+            return;
         }
 
         foreach (AIControls ai in aiControls)

@@ -11,6 +11,7 @@ public class LapManager : MonoBehaviour
 
     private List<PlayerRank> playerRanks = new List<PlayerRank>();
     private PlayerRank mainPlayerRank;
+    private int finishCheckpointIndex;
     public UnityEvent onPlayerFinished = new UnityEvent();
 
     IEnumerator Start()
@@ -18,9 +19,18 @@ public class LapManager : MonoBehaviour
         // Wait for one frame to ensure all cars and tags are initialized
         yield return null;
 
-        foreach (CarIdentity carIdentity in GameObject.FindObjectsOfType<CarIdentity>())
+        playerRanks.Clear();
+
+        finishCheckpointIndex = ResolveFinishCheckpointIndex();
+
+        foreach (CarIdentity carIdentity in FindObjectsByType<CarIdentity>(FindObjectsSortMode.None))
         {
-            playerRanks.Add(new PlayerRank(carIdentity));
+            var playerRank = new PlayerRank(carIdentity)
+            {
+                lastCheckpoint = finishCheckpointIndex
+            };
+
+            playerRanks.Add(playerRank);
         }
 
         ListenCheckpoints(true);
@@ -39,8 +49,18 @@ public class LapManager : MonoBehaviour
 
     private void ListenCheckpoints(bool subscribe)
     {
+        if (checkpoints == null)
+        {
+            return;
+        }
+
         foreach (Checkpoint checkpoint in checkpoints)
         {
+            if (checkpoint == null)
+            {
+                continue;
+            }
+
             if (subscribe)
                 checkpoint.onCheckpointEnter.AddListener(CheckpointActivated);
             else
@@ -50,6 +70,11 @@ public class LapManager : MonoBehaviour
 
     public void CheckpointActivated(CarIdentity car, Checkpoint checkpoint)
     {
+        if (checkpoints == null || checkpoint == null)
+        {
+            return;
+        }
+
         PlayerRank player = playerRanks.Find((rank) => rank.identity == car);
         if (checkpoints.Contains(checkpoint) && player!=null)
         {
@@ -57,14 +82,24 @@ public class LapManager : MonoBehaviour
             if (player.hasFinished) return;
 
             int checkpointNumber = checkpoints.IndexOf(checkpoint);
-            // first time ever the car reach the first checkpoint
-            bool startingFirstLap = checkpointNumber == 0 && player.lastCheckpoint == -1;
-            // finish line checkpoint is triggered & last checkpoint was reached
-            bool lapIsFinished = checkpointNumber == 0 && player.lastCheckpoint >= checkpoints.Count - 1;
-            if (startingFirstLap || lapIsFinished) 
-            { 
+            if (checkpointNumber < 0 || checkpoints.Count == 0)
+            {
+                return;
+            }
+
+            int nextExpectedCheckpoint = (player.lastCheckpoint + 1) % checkpoints.Count;
+            if (checkpointNumber != nextExpectedCheckpoint)
+            {
+                return;
+            }
+
+            player.lastCheckpoint = checkpointNumber;
+            bool lapIsFinished = checkpointNumber == finishCheckpointIndex;
+
+            if (lapIsFinished)
+            {
                 player.lapNumber += 1;
-                player.lastCheckpoint = 0;
+                player.lastCheckpoint = finishCheckpointIndex;
 
                 // if this was the final lap
                 if (player.lapNumber > totalLaps)
@@ -86,7 +121,18 @@ public class LapManager : MonoBehaviour
                         ui.UpdateLapText("\nYou finished in " + mainPlayerRank.rank + " place");
                     }
 
-                    if (player == mainPlayerRank) onPlayerFinished.Invoke();
+                    if (player == mainPlayerRank)
+                    {
+                        Planet2WinScreenController winScreenController = FindFirstObjectByType<Planet2WinScreenController>();
+                        if (winScreenController != null)
+                        {
+                            winScreenController.HandlePlayerFinished();
+                        }
+                        else
+                        {
+                            onPlayerFinished.Invoke();
+                        }
+                    }
                 }
                 else {
                     // TODO : create attribute divername in CarIdentity 
@@ -94,11 +140,25 @@ public class LapManager : MonoBehaviour
                     if (car.gameObject.tag == "Player") ui.UpdateLapText("Lap " + player.lapNumber + " / " + totalLaps);
                 }
             }
-            // next checkpoint reached
-            else if (checkpointNumber == player.lastCheckpoint + 1)
+        }
+    }
+
+    private int ResolveFinishCheckpointIndex()
+    {
+        if (checkpoints == null || checkpoints.Count == 0)
+        {
+            return 0;
+        }
+
+        for (int i = 0; i < checkpoints.Count; i++)
+        {
+            Checkpoint checkpoint = checkpoints[i];
+            if (checkpoint != null && checkpoint.gameObject.name.Contains("StartFinish"))
             {
-                player.lastCheckpoint += 1;
+                return i;
             }
         }
+
+        return 0;
     }
 }
