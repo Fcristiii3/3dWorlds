@@ -39,8 +39,13 @@ public sealed class Planet2ProceduralTrackGenerator
         public GameObject straightPrefab;
         public GameObject cornerPrefab;
         public GameObject startFinishDecorationPrefab;
+        public GameObject streetLampPrefab;
         public float tileSize = 10f;
         public float trackScale = 2.5f;
+        public int lampSpawnInterval = 3;
+        public float lampVerticalOffset = 0.5f;
+        public float lampDepthOffset = 0.35f;
+        public float lampRotationCorrection = 90f;
         public float startHeight = 0.85f;
         public int checkpointCount = 4;
         public float straightRotationOffsetDegrees;
@@ -113,14 +118,24 @@ public sealed class Planet2ProceduralTrackGenerator
         decorationRoot.transform.SetParent(root.transform, false);
 
         Dictionary<Vector2Int, TrackPieceData> trackMap = BuildTrackMap();
-        List<TrackPieceData> orderedPieces = new List<TrackPieceData>(trackMap.Values);
-        orderedPieces.Sort(CompareTrackPieces);
+        List<TrackPieceData> orderedPieces = CreateOrderedPieces(trackMap);
         var spawnedPiecePositions = new List<Vector3>(orderedPieces.Count);
+        int lampInterval = Mathf.Max(1, settings.lampSpawnInterval);
+        bool spawnLampOnLeftSide = true;
 
         for (int i = 0; i < orderedPieces.Count; i++)
         {
-            GameObject spawnedPiece = SpawnMappedPiece(pieceRoot.transform, orderedPieces[i], i);
+            TrackPieceData pieceData = orderedPieces[i];
+            GameObject spawnedPiece = SpawnMappedPiece(pieceRoot.transform, pieceData, i);
             spawnedPiecePositions.Add(spawnedPiece.transform.position);
+
+            if ((i + 1) % lampInterval == 0 && pieceData.PieceKind == TrackPieceKind.Straight)
+            {
+                if (SpawnStreetLamp(spawnedPiece.transform, spawnLampOnLeftSide))
+                {
+                    spawnLampOnLeftSide = !spawnLampOnLeftSide;
+                }
+            }
         }
 
         List<Checkpoint> checkpoints = CreateCheckpoints(triggerRoot.transform);
@@ -133,6 +148,24 @@ public sealed class Planet2ProceduralTrackGenerator
         Quaternion startRotation = Quaternion.LookRotation(startForward, Vector3.up);
 
         return new BuildResult(root, checkpoints, flyoverWaypoints, flyoverLookTarget, startPosition, startRotation);
+    }
+
+    private List<TrackPieceData> CreateOrderedPieces(Dictionary<Vector2Int, TrackPieceData> trackMap)
+    {
+        var orderedPieces = new List<TrackPieceData>(layout.Cells.Count);
+
+        for (int i = 0; i < layout.Cells.Count; i++)
+        {
+            Vector2Int cell = layout.Cells[i];
+            if (!trackMap.TryGetValue(cell, out TrackPieceData pieceData))
+            {
+                throw new InvalidOperationException($"Planet2ProceduralTrackGenerator could not resolve mapped data for loop cell {cell}.");
+            }
+
+            orderedPieces.Add(pieceData);
+        }
+
+        return orderedPieces;
     }
 
     private Dictionary<Vector2Int, TrackPieceData> BuildTrackMap()
@@ -231,6 +264,43 @@ public sealed class Planet2ProceduralTrackGenerator
         decoration.transform.SetPositionAndRotation(
             GridToWorld(startCell),
             Quaternion.LookRotation(startForward, Vector3.up));
+    }
+
+    private bool SpawnStreetLamp(Transform trackPieceTransform, bool placeOnLeftSide)
+    {
+        if (settings.streetLampPrefab == null || trackPieceTransform == null)
+        {
+            return false;
+        }
+
+        string wallName = placeOnLeftSide ? "Wall_Left" : "Wall_Right";
+        Transform wallTransform = FindChildRecursive(trackPieceTransform, wallName);
+        if (wallTransform == null)
+        {
+            Debug.LogWarning($"Planet2ProceduralTrackGenerator could not find '{wallName}' under '{trackPieceTransform.name}'.");
+            return false;
+        }
+
+        GameObject lamp = Object.Instantiate(settings.streetLampPrefab, trackPieceTransform, false);
+        lamp.name = placeOnLeftSide ? "StreetLamp_Left" : "StreetLamp_Right";
+        Transform lampTransform = lamp.transform;
+        lampTransform.localScale = GetUnscaledChildLocalScale(settings.streetLampPrefab.transform.localScale, trackPieceTransform.lossyScale);
+
+        Vector3 wallLocalPosition = trackPieceTransform.InverseTransformPoint(wallTransform.position);
+        Vector3 towardTrackCenterLocal = new Vector3(-wallLocalPosition.x, 0f, -wallLocalPosition.z);
+        if (towardTrackCenterLocal.sqrMagnitude < 0.0001f)
+        {
+            towardTrackCenterLocal = placeOnLeftSide ? Vector3.right : Vector3.left;
+        }
+
+        Vector3 outwardLocal = -towardTrackCenterLocal.normalized;
+        lampTransform.localPosition = wallLocalPosition
+            + (Vector3.up * settings.lampVerticalOffset)
+            + (outwardLocal * settings.lampDepthOffset);
+
+        Quaternion lookAtCenterRotation = Quaternion.LookRotation(towardTrackCenterLocal.normalized, Vector3.up);
+        lampTransform.localRotation = lookAtCenterRotation * Quaternion.Euler(0f, settings.lampRotationCorrection, 0f);
+        return true;
     }
 
     private List<Checkpoint> CreateCheckpoints(Transform parent)
@@ -398,21 +468,44 @@ public sealed class Planet2ProceduralTrackGenerator
         return (first == expectedA && second == expectedB) || (first == expectedB && second == expectedA);
     }
 
-    private static int CompareTrackPieces(TrackPieceData firstPiece, TrackPieceData secondPiece)
-    {
-        int byY = firstPiece.Coordinate.y.CompareTo(secondPiece.Coordinate.y);
-        if (byY != 0)
-        {
-            return byY;
-        }
-
-        return firstPiece.Coordinate.x.CompareTo(secondPiece.Coordinate.x);
-    }
-
     private static float ApplyQuarterTurnOffset(float baseYaw, float offsetDegrees)
     {
         int quarterTurnOffset = Mathf.RoundToInt(offsetDegrees / 90f);
         return Mathf.Repeat(baseYaw + (quarterTurnOffset * 90f), 360f);
+    }
+
+    private static Transform FindChildRecursive(Transform parent, string childName)
+    {
+        Transform directMatch = parent.Find(childName);
+        if (directMatch != null)
+        {
+            return directMatch;
+        }
+
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Transform child = parent.GetChild(i);
+            Transform nestedMatch = FindChildRecursive(child, childName);
+            if (nestedMatch != null)
+            {
+                return nestedMatch;
+            }
+        }
+
+        return null;
+    }
+
+    private static float DivideByScale(float value, float scale)
+    {
+        return Mathf.Approximately(scale, 0f) ? value : value / scale;
+    }
+
+    private static Vector3 GetUnscaledChildLocalScale(Vector3 prefabLocalScale, Vector3 parentLossyScale)
+    {
+        return new Vector3(
+            DivideByScale(prefabLocalScale.x, parentLossyScale.x),
+            DivideByScale(prefabLocalScale.y, parentLossyScale.y),
+            DivideByScale(prefabLocalScale.z, parentLossyScale.z));
     }
 
     private static void EnsureColliders(GameObject piece)

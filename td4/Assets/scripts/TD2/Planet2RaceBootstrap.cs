@@ -15,6 +15,14 @@ public class Planet2RaceBootstrap : MonoBehaviour
     [SerializeField] private GameObject cornerPrefab;
     [SerializeField] private GameObject startFinishDecorationPrefab;
 
+    [Header("Props")]
+    [SerializeField] private GameObject streetLampPrefab;
+    [Min(1)]
+    [SerializeField] private int lampSpawnInterval = 3;
+    [SerializeField] private float lampVerticalOffset = 0.5f;
+    [SerializeField] private float lampDepthOffset = 0.35f;
+    [SerializeField] private float lampRotationCorrection = 90f;
+
     [Header("Track Layout")]
     [Min(12)]
     [SerializeField] private int targetTrackLength = 32;
@@ -84,8 +92,13 @@ public class Planet2RaceBootstrap : MonoBehaviour
                 straightPrefab = straightPrefab,
                 cornerPrefab = cornerPrefab,
                 startFinishDecorationPrefab = startFinishDecorationPrefab,
+                streetLampPrefab = streetLampPrefab,
                 tileSize = tileSize,
                 trackScale = trackScale,
+                lampSpawnInterval = lampSpawnInterval,
+                lampVerticalOffset = lampVerticalOffset,
+                lampDepthOffset = lampDepthOffset,
+                lampRotationCorrection = lampRotationCorrection,
                 startHeight = startHeight,
                 checkpointCount = checkpointCount,
                 straightRotationOffsetDegrees = straightRotationOffsetDegrees,
