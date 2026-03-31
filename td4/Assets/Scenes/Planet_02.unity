@@ -14,12 +14,12 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 0
-  m_FogColor: {r: 0.09433961, g: 0.09253419, b: 0.081701666, a: 1}
+  m_Fog: 1
+  m_FogColor: {r: 0, g: 0, b: 0.015686275, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.01
   m_LinearFogStart: 20
-  m_LinearFogEnd: 100
+  m_LinearFogEnd: 200
   m_AmbientSkyColor: {r: 0.035245534, g: 0.030936234, b: 0.2981131, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
@@ -2279,10 +2279,38 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 58bf2db3e84301446a3d3cd1d194597a, type: 2}
+    - target: {fileID: 6920554738469874018, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: m_Size.x
+      value: 0.95184296
+      objectReference: {fileID: 0}
+    - target: {fileID: 6920554738469874018, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: m_Size.y
+      value: 0.7280108
+      objectReference: {fileID: 0}
+    - target: {fileID: 6920554738469874018, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: m_Center.x
+      value: -0.0023851697
+      objectReference: {fileID: 0}
+    - target: {fileID: 6920554738469874018, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: m_Center.y
+      value: 0.11423166
+      objectReference: {fileID: 0}
+    - target: {fileID: 6920554738469874018, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: m_Center.z
+      value: 0.0029111602
+      objectReference: {fileID: 0}
+    - target: {fileID: 7525775435582802773, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: MinDistance
+      value: 1.2833023
+      objectReference: {fileID: 0}
     - target: {fileID: 7971256228342120774, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 58bf2db3e84301446a3d3cd1d194597a, type: 2}
+    - target: {fileID: 8165052804452578074, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -789643815007115873, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
     m_RemovedGameObjects: []

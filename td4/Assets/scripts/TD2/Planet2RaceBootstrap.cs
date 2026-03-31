@@ -46,6 +46,11 @@ public class Planet2RaceBootstrap : MonoBehaviour
     [SerializeField] private float startHeight = 0.85f;
     [Min(3)]
     [SerializeField] private int checkpointCount = 4;
+    [Header("AI Setup")]
+    [Min(1f)]
+    [SerializeField] private float aiStartRowSpacing = 6f;
+    [Min(0f)]
+    [SerializeField] private float aiStartSideSpacing = 3f;
     [Tooltip("Optional quarter-turn offset for straight prefabs. Use 90 degree increments if their default forward axis is different.")]
     [SerializeField] private float straightRotationOffsetDegrees;
     [Tooltip("Use 90 degree increments if the corner prefab faces the wrong way after you assign it.")]
@@ -72,7 +77,6 @@ public class Planet2RaceBootstrap : MonoBehaviour
         }
 
         DisableLegacyTrack();
-        DisableAiCars(gameManager);
         ClearLegacyCheckpoints(gameManager.lapTracker);
         DestroyExistingGeneratedTrack();
 
@@ -120,6 +124,7 @@ public class Planet2RaceBootstrap : MonoBehaviour
         }
 
         PositionPlayer(playerControl, buildResult.StartPosition, buildResult.StartRotation);
+        PrepareAiCars(gameManager, buildResult);
         Physics.SyncTransforms();
         WireSceneReferences(gameManager, playerControl);
         bool flyoverConfigured = ConfigureProceduralFlyover(gameManager, buildResult);
@@ -148,6 +153,66 @@ public class Planet2RaceBootstrap : MonoBehaviour
         if (legacyTrackRoot != null)
         {
             legacyTrackRoot.SetActive(false);
+        }
+    }
+
+    private void PrepareAiCars(GameManager gameManager, Planet2ProceduralTrackGenerator.BuildResult buildResult)
+    {
+        AIControls[] aiCars = UnityEngine.Object.FindObjectsByType<AIControls>(FindObjectsSortMode.None);
+        if (aiCars == null || aiCars.Length == 0)
+        {
+            gameManager.aiControls = Array.Empty<AIControls>();
+            return;
+        }
+
+        var configuredAiCars = new List<AIControls>(aiCars.Length);
+
+        for (int i = 0; i < aiCars.Length; i++)
+        {
+            AIControls aiCar = aiCars[i];
+            if (aiCar == null)
+            {
+                continue;
+            }
+
+            aiCar.gameObject.SetActive(true);
+            aiCar.SetWaypointsHolder(buildResult.AIWaypointsHolder);
+            PositionAiCar(aiCar, buildResult.StartPosition, buildResult.StartRotation, i, aiCars.Length);
+            aiCar.enabled = false;
+            configuredAiCars.Add(aiCar);
+        }
+
+        gameManager.aiControls = configuredAiCars.ToArray();
+    }
+
+    private void PositionAiCar(AIControls aiCar, Vector3 startPosition, Quaternion startRotation, int aiIndex, int totalAiCars)
+    {
+        Transform aiTransform = aiCar.transform;
+        Vector3 startForward = startRotation * Vector3.forward;
+        Vector3 startRight = startRotation * Vector3.right;
+
+        int rowIndex = (aiIndex / 2) + 1;
+        bool isSoloCar = totalAiCars <= 1;
+        float sideDirection = aiIndex % 2 == 0 ? -1f : 1f;
+        float sideOffset = isSoloCar ? 0f : sideDirection * aiStartSideSpacing;
+        Vector3 aiPosition = startPosition - (startForward * (rowIndex * aiStartRowSpacing)) + (startRight * sideOffset);
+        aiPosition.y = startPosition.y;
+
+        aiTransform.SetPositionAndRotation(aiPosition, startRotation);
+
+        Rigidbody rigidbody = aiCar.GetComponent<Rigidbody>();
+        if (rigidbody != null)
+        {
+            rigidbody.linearVelocity = Vector3.zero;
+            rigidbody.angularVelocity = Vector3.zero;
+            rigidbody.position = aiPosition;
+            rigidbody.rotation = startRotation;
+            rigidbody.Sleep();
+        }
+
+        if (aiTransform.CompareTag("Player"))
+        {
+            aiTransform.tag = "ai";
         }
     }
 

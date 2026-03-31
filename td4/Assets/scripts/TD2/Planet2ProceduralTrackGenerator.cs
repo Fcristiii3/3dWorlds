@@ -61,6 +61,7 @@ public sealed class Planet2ProceduralTrackGenerator
         public BuildResult(
             GameObject root,
             List<Checkpoint> checkpoints,
+            Transform aiWaypointsHolder,
             List<Vector3> flyoverWaypoints,
             Vector3 flyoverLookTarget,
             Vector3 startPosition,
@@ -68,6 +69,7 @@ public sealed class Planet2ProceduralTrackGenerator
         {
             Root = root;
             Checkpoints = checkpoints;
+            AIWaypointsHolder = aiWaypointsHolder;
             FlyoverWaypoints = flyoverWaypoints;
             FlyoverLookTarget = flyoverLookTarget;
             StartPosition = startPosition;
@@ -76,6 +78,7 @@ public sealed class Planet2ProceduralTrackGenerator
 
         public GameObject Root { get; }
         public List<Checkpoint> Checkpoints { get; }
+        public Transform AIWaypointsHolder { get; }
         public List<Vector3> FlyoverWaypoints { get; }
         public Vector3 FlyoverLookTarget { get; }
         public Vector3 StartPosition { get; }
@@ -111,10 +114,12 @@ public sealed class Planet2ProceduralTrackGenerator
         GameObject root = new GameObject("Planet2GeneratedTrack");
         GameObject pieceRoot = new GameObject("Pieces");
         GameObject triggerRoot = new GameObject("Checkpoints");
+        GameObject aiWaypointRoot = new GameObject("AIWaypoints");
         GameObject decorationRoot = new GameObject("Decorations");
 
         pieceRoot.transform.SetParent(root.transform, false);
         triggerRoot.transform.SetParent(root.transform, false);
+        aiWaypointRoot.transform.SetParent(root.transform, false);
         decorationRoot.transform.SetParent(root.transform, false);
 
         Dictionary<Vector2Int, TrackPieceData> trackMap = BuildTrackMap();
@@ -139,6 +144,7 @@ public sealed class Planet2ProceduralTrackGenerator
         }
 
         List<Checkpoint> checkpoints = CreateCheckpoints(triggerRoot.transform);
+        Transform aiWaypointsHolder = CreateAIWaypoints(aiWaypointRoot.transform);
         List<Vector3> flyoverWaypoints = CreateFlyoverWaypoints(spawnedPiecePositions, out Vector3 flyoverLookTarget);
 
         Vector3 startForward = GridToWorldDirection(GetForwardDirection(0));
@@ -147,7 +153,7 @@ public sealed class Planet2ProceduralTrackGenerator
         startPosition.y = settings.startHeight;
         Quaternion startRotation = Quaternion.LookRotation(startForward, Vector3.up);
 
-        return new BuildResult(root, checkpoints, flyoverWaypoints, flyoverLookTarget, startPosition, startRotation);
+        return new BuildResult(root, checkpoints, aiWaypointsHolder, flyoverWaypoints, flyoverLookTarget, startPosition, startRotation);
     }
 
     private List<TrackPieceData> CreateOrderedPieces(Dictionary<Vector2Int, TrackPieceData> trackMap)
@@ -336,6 +342,26 @@ public sealed class Planet2ProceduralTrackGenerator
         }
 
         return checkpoints;
+    }
+
+    private Transform CreateAIWaypoints(Transform parent)
+    {
+        int loopCellCount = layout.Cells.Count;
+        float waypointHeight = settings.startHeight;
+
+        for (int i = 1; i <= loopCellCount; i++)
+        {
+            int cellIndex = i % loopCellCount;
+            Vector2Int cell = layout.Cells[cellIndex];
+            Vector3 waypointPosition = GridToWorld(cell);
+            waypointPosition.y = waypointHeight;
+
+            GameObject waypoint = new GameObject($"Waypoint_{i:000}");
+            waypoint.transform.SetParent(parent, false);
+            waypoint.transform.position = waypointPosition;
+        }
+
+        return parent;
     }
 
     private List<Vector3> CreateFlyoverWaypoints(IReadOnlyList<Vector3> piecePositions, out Vector3 trackCenter)

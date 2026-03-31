@@ -19,34 +19,26 @@ public class AIControls : MonoBehaviour
 
     void Awake()
     {
-        waypoints = new List<Transform>();
-
-        // Find all Transform components in children
-        foreach (Transform t in waypointsHolder.GetComponentsInChildren<Transform>())
-        {
-            // Make sure to not include the waypointsHolder transform in your list!
-            if (t != waypointsHolder)
-            {
-                waypoints.Add(t);
-            }
-        }
-
-        // Start with the first waypoint
-        if (waypoints.Count > 0)
-        {
-            nextWaypoint = waypoints[0];
-            Update();
-        }
+        RebuildWaypoints();
     }
 
     void Start()
     {
-        // Start with first waypoint
-        SelectWaypoint(waypoints[0]);
+        if (waypoints != null && waypoints.Count > 0)
+        {
+            SelectWaypoint(waypoints[0]);
+        }
     }
 
     void Update()
     {
+        if (waypoints == null || waypoints.Count == 0 || nextWaypoint == null)
+        {
+            input = Vector2.zero;
+            onInput?.Invoke(input);
+            return;
+        }
+
         // Change to next waypoint if reached current waypoint
         float distanceToTarget = Vector3.Distance(transform.position, nextWaypointPosition);
         if (distanceToTarget < maxDistanceToTarget)
@@ -70,11 +62,65 @@ public class AIControls : MonoBehaviour
         onInput?.Invoke(input);
     }
 
+    public void SetWaypointsHolder(Transform newWaypointsHolder)
+    {
+        waypointsHolder = newWaypointsHolder;
+        RebuildWaypoints();
+
+        if (waypoints != null && waypoints.Count > 0)
+        {
+            SelectWaypoint(waypoints[0]);
+        }
+    }
+
     void SelectWaypoint(Transform waypoint)
     {
+        if (waypoint == null)
+        {
+            nextWaypoint = null;
+            nextWaypointPosition = transform.position;
+            return;
+        }
+
         nextWaypoint = waypoint;
-        // Totally optional : 
-        // This "jitter" add a little randomness around the waypoint to make the AI slightly more human 
         nextWaypointPosition = nextWaypoint.position + new Vector3(Random.Range(-randomJitterOnPosition, randomJitterOnPosition), 0, Random.Range(-randomJitterOnPosition, randomJitterOnPosition));
+    }
+
+    private void RebuildWaypoints()
+    {
+        if (waypoints == null)
+        {
+            waypoints = new List<Transform>();
+        }
+        else
+        {
+            waypoints.Clear();
+        }
+
+        if (waypointsHolder == null)
+        {
+            nextWaypoint = null;
+            nextWaypointPosition = transform.position;
+            return;
+        }
+
+        foreach (Transform t in waypointsHolder.GetComponentsInChildren<Transform>())
+        {
+            if (t != waypointsHolder)
+            {
+                waypoints.Add(t);
+            }
+        }
+
+        if (waypoints.Count > 0)
+        {
+            nextWaypoint = waypoints[0];
+            nextWaypointPosition = nextWaypoint.position;
+        }
+        else
+        {
+            nextWaypoint = null;
+            nextWaypointPosition = transform.position;
+        }
     }
 }
