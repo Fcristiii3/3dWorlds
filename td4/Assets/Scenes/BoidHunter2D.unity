@@ -238,9 +238,11 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   moveSpeed: 10
-  eatRadius: 1
+  eatRadius: 2
   hunterColor: {r: 1, g: 0.45, b: 0.3, a: 1}
-  useAutoControl: 1
+  useAutoControl: 0
+  useManualNormalization: 0
+  showDiagnostics: 0
   manager: {fileID: 1846218206}
 --- !u!23 &1207949024
 MeshRenderer:
@@ -331,12 +333,12 @@ MonoBehaviour:
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 2
-      BranchSizes: 00000000
-    VectorActionSize: 
+      BranchSizes: 
+    VectorActionSize: 02000000
     VectorActionDescriptions: []
-    VectorActionSpaceType: 0
+    VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: a0387c9649f6ea44faa7a21e558a0975, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: HunterAgent
@@ -401,7 +403,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.ML-Agents::Unity.MLAgents.Sensors.BufferSensorComponent
   m_SensorName: BufferSensor
   m_ObservableSize: 4
-  m_MaxNumObservables: 20
+  m_MaxNumObservables: 60
 --- !u!1 &1262348718
 GameObject:
   m_ObjectHideFlags: 0
@@ -771,9 +773,11 @@ MonoBehaviour:
   boidVisualSize: 0.45
   boidColor: {r: 0.35, g: 0.75, b: 1, a: 1}
   boidControlMode: 0
-  trainingMode: 1
+  trainingMode: 0
   matchDuration: 60
   timeRemaining: 0
+  boidBrain: {fileID: 0}
+  hunterBrain: {fileID: 5022602860645237092, guid: a0387c9649f6ea44faa7a21e558a0975, type: 3}
   hunter: {fileID: 1207949023}
   hunterAutoControl: 1
   scoreText: {fileID: 1035072160}

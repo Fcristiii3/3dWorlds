@@ -54,15 +54,24 @@
                 "auxillary_file_paths": [
                     "results\\Boids_Run17\\BoidAgent\\BoidAgent-14329742.pt"
                 ]
+            },
+            {
+                "steps": 4999996,
+                "file_path": "results\\Boids_Run17\\BoidAgent\\BoidAgent-4999996.onnx",
+                "reward": null,
+                "creation_time": 1774798722.7801414,
+                "auxillary_file_paths": [
+                    "results\\Boids_Run17\\BoidAgent\\BoidAgent-4999996.pt"
+                ]
             }
         ],
         "final_checkpoint": {
-            "steps": 14329742,
+            "steps": 4999996,
             "file_path": "results\\Boids_Run17\\BoidAgent.onnx",
             "reward": null,
-            "creation_time": 1774595805.6573703,
+            "creation_time": 1774798722.7801414,
             "auxillary_file_paths": [
-                "results\\Boids_Run17\\BoidAgent\\BoidAgent-14329742.pt"
+                "results\\Boids_Run17\\BoidAgent\\BoidAgent-4999996.pt"
             ]
         }
     },
@@ -103,21 +112,30 @@
                 "auxillary_file_paths": [
                     "results\\Boids_Run17\\HunterAgent\\HunterAgent-396917.pt"
                 ]
+            },
+            {
+                "steps": 66972,
+                "file_path": "results\\Boids_Run17\\HunterAgent\\HunterAgent-66972.onnx",
+                "reward": null,
+                "creation_time": 1774798722.5906675,
+                "auxillary_file_paths": [
+                    "results\\Boids_Run17\\HunterAgent\\HunterAgent-66972.pt"
+                ]
             }
         ],
         "final_checkpoint": {
-            "steps": 396917,
+            "steps": 66972,
             "file_path": "results\\Boids_Run17\\HunterAgent.onnx",
             "reward": null,
-            "creation_time": 1774595808.0988812,
+            "creation_time": 1774798722.5906675,
             "auxillary_file_paths": [
-                "results\\Boids_Run17\\HunterAgent\\HunterAgent-396917.pt"
+                "results\\Boids_Run17\\HunterAgent\\HunterAgent-66972.pt"
             ]
         }
     },
     "metadata": {
         "stats_format_version": "0.3.0",
         "mlagents_version": "1.1.0",
-        "torch_version": "2.11.0+cpu"
+        "torch_version": "2.2.2+cpu"
     }
 }

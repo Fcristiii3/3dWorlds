@@ -1,0 +1,186 @@
+{
+    "BoidAgent": {
+        "checkpoints": [
+            {
+                "steps": 2499620,
+                "file_path": "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-2499620.onnx",
+                "reward": 30.45048844405249,
+                "creation_time": 1774661422.1572096,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-2499620.pt"
+                ]
+            },
+            {
+                "steps": 4999874,
+                "file_path": "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-4999874.onnx",
+                "reward": 17.765192797860585,
+                "creation_time": 1774668568.6207697,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-4999874.pt"
+                ]
+            },
+            {
+                "steps": 7499968,
+                "file_path": "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-7499968.onnx",
+                "reward": 3.12701553106308,
+                "creation_time": 1774675810.7743163,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-7499968.pt"
+                ]
+            },
+            {
+                "steps": 9999528,
+                "file_path": "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-9999528.onnx",
+                "reward": 29.68699359893799,
+                "creation_time": 1774683017.6032062,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-9999528.pt"
+                ]
+            },
+            {
+                "steps": 12499982,
+                "file_path": "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-12499982.onnx",
+                "reward": 23.972491666066404,
+                "creation_time": 1774690367.6208389,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-12499982.pt"
+                ]
+            },
+            {
+                "steps": 14999978,
+                "file_path": "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-14999978.onnx",
+                "reward": 53.57707095043413,
+                "creation_time": 1774697632.4275823,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-14999978.pt"
+                ]
+            },
+            {
+                "steps": 16132598,
+                "file_path": "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-16132598.onnx",
+                "reward": 36.38807309860432,
+                "creation_time": 1774701008.4314399,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-16132598.pt"
+                ]
+            },
+            {
+                "steps": 16174878,
+                "file_path": "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-16174878.onnx",
+                "reward": -31.54539942432727,
+                "creation_time": 1774703350.2837138,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-16174878.pt"
+                ]
+            },
+            {
+                "steps": 16239348,
+                "file_path": "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-16239348.onnx",
+                "reward": -37.66279734745622,
+                "creation_time": 1774703453.436427,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-16239348.pt"
+                ]
+            },
+            {
+                "steps": 16281628,
+                "file_path": "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-16281628.onnx",
+                "reward": -25.55554902404547,
+                "creation_time": 1774798536.9181542,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-16281628.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 16281628,
+            "file_path": "results\\Ecosystem_v2\\BoidAgent.onnx",
+            "reward": -25.55554902404547,
+            "creation_time": 1774798536.9181542,
+            "auxillary_file_paths": [
+                "results\\Ecosystem_v2\\BoidAgent\\BoidAgent-16281628.pt"
+            ]
+        }
+    },
+    "HunterAgent": {
+        "checkpoints": [
+            {
+                "steps": 99991,
+                "file_path": "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-99991.onnx",
+                "reward": 73.58737993985415,
+                "creation_time": 1774666782.4250858,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-99991.pt"
+                ]
+            },
+            {
+                "steps": 199924,
+                "file_path": "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-199924.onnx",
+                "reward": 126.64577411860228,
+                "creation_time": 1774679520.8113112,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-199924.pt"
+                ]
+            },
+            {
+                "steps": 299731,
+                "file_path": "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-299731.onnx",
+                "reward": null,
+                "creation_time": 1774691737.1171575,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-299731.pt"
+                ]
+            },
+            {
+                "steps": 378141,
+                "file_path": "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-378141.onnx",
+                "reward": 58.90904621779919,
+                "creation_time": 1774701005.3753555,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-378141.pt"
+                ]
+            },
+            {
+                "steps": 65765,
+                "file_path": "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-65765.onnx",
+                "reward": null,
+                "creation_time": 1774703347.6222966,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-65765.pt"
+                ]
+            },
+            {
+                "steps": 66082,
+                "file_path": "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-66082.onnx",
+                "reward": 1852.16259765625,
+                "creation_time": 1774703450.7845607,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-66082.pt"
+                ]
+            },
+            {
+                "steps": 67576,
+                "file_path": "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-67576.onnx",
+                "reward": null,
+                "creation_time": 1774798537.1067042,
+                "auxillary_file_paths": [
+                    "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-67576.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 67576,
+            "file_path": "results\\Ecosystem_v2\\HunterAgent.onnx",
+            "reward": null,
+            "creation_time": 1774798537.1067042,
+            "auxillary_file_paths": [
+                "results\\Ecosystem_v2\\HunterAgent\\HunterAgent-67576.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.2.2+cpu"
+    }
+}

@@ -24,7 +24,7 @@ public class BoidGameManager2D : MonoBehaviour
     public float matchDuration = 60f;
     public float timeRemaining;
 
-    [Header("Inference (Drag .onnx files here when NOT training)")]
+    [Header("Inference")]
     public ModelAsset boidBrain;
     public ModelAsset hunterBrain;
 
@@ -35,7 +35,6 @@ public class BoidGameManager2D : MonoBehaviour
     [Header("UI")]
     public Text scoreText;
 
-    // References
     private readonly List<BoidAgent2D> boids = new List<BoidAgent2D>();
     private readonly List<BoidAgent2D> graveyard = new List<BoidAgent2D>();
     public List<BoidAgent2D> Boids => boids;
@@ -48,7 +47,6 @@ public class BoidGameManager2D : MonoBehaviour
 
     private void Start()
     {
-        // Stop Unity from freezing the entire simulation when you click away!
         Application.runInBackground = true;
 
         ApplyTrainingModeDefaults();
@@ -71,8 +69,11 @@ public class BoidGameManager2D : MonoBehaviour
     {
         if (trainingMode)
         {
-            boidControlMode = BoidAgent2D.BoidControlMode.MlAgent;
-            hunterAutoControl = true;
+            Application.runInBackground = true;
+
+            hunterAutoControl = false;
+            
+            if (hunter != null) hunter.useAutoControl = false;
         }
     }
 
@@ -87,7 +88,6 @@ public class BoidGameManager2D : MonoBehaviour
         eatenCount = 0;
         timeRemaining = matchDuration;
 
-        // Revive Boids from the graveyard!
         for (int i = graveyard.Count - 1; i >= 0; i--)
         {
             BoidAgent2D ghost = graveyard[i];
@@ -99,7 +99,6 @@ public class BoidGameManager2D : MonoBehaviour
             }
         }
 
-        // Stutter Fix: Only spawn missing Boids instead of destroying and re-rendering 64 complex 3D objects!
         int targetCount = Mathf.Max(2, startingBoidCount);
         int needed = targetCount - boids.Count;
         
@@ -108,7 +107,6 @@ public class BoidGameManager2D : MonoBehaviour
             SpawnBoid();
         }
 
-        // Instantly pool and randomize existing boids
         foreach (var boid in boids)
         {
             if (boid == null) continue;
@@ -123,12 +121,6 @@ public class BoidGameManager2D : MonoBehaviour
             {
                 boidRb.linearVelocity = Random.insideUnitCircle.normalized * boid.moveSpeed;
             }
-        }
-
-        // Normalize Hunter speed to perfectly match the boids max speed!
-        if (hunter != null && boids.Count > 0)
-        {
-            hunter.moveSpeed = boids[0].maxSpeed;
         }
 
         RefreshScoreUI();
@@ -166,8 +158,7 @@ public class BoidGameManager2D : MonoBehaviour
         timeRemaining -= Time.deltaTime;
         RefreshScoreUI();
 
-        // End round completely if the time is up, OR if the hunter successfully caught all boids!
-        if (timeRemaining <= 0 || boids.Count == 0)
+        if (timeRemaining <= 0 || (timeRemaining < matchDuration - 1.0f && boids.Count == 0))
         {
             timeRemaining = 0;
             EndRound();
@@ -176,13 +167,25 @@ public class BoidGameManager2D : MonoBehaviour
 
     private void EndRound()
     {
+        if (!IsGameRunning) return;
         IsGameRunning = false;
-        
+
+        foreach (BoidAgent2D boid in boids)
+        {
+            if (boid != null) boid.EndEpisode();
+        }
+
+        foreach (BoidAgent2D ghost in graveyard)
+        {
+            if (ghost != null) ghost.EndEpisode();
+        }
+
         if (hunter != null && hunter.TryGetComponent<Unity.MLAgents.Agent>(out var agent))
         {
-            // End the hunter's ML-Agents episode explicitly so it learns from this 60s batch
             agent.EndEpisode();
         }
+
+        if (matchDuration <= 0) matchDuration = 60f;
 
         StartGame();
     }
@@ -204,15 +207,8 @@ public class BoidGameManager2D : MonoBehaviour
             if (distanceSqr <= radiusSqr)
             {
                 boids.RemoveAt(i);
-                
-                // CRITICAL FIX: Destroying the Boid immediately after calling EndEpisode() severs the 
-                // socket connection to Python before Python realizes the Boid died! Python sits there 
-                // waiting 60 seconds for the dead Boid's next move, crashing the entire trainer!
-                boid.CaughtByHunter(); 
-                
-                // Instead of teleporting them endlessly, we deactivate them! This formally and elegantly
-                // unregisters the PyTorch socket hook, and puts them in our Graveyard pool!
-                boid.gameObject.SetActive(false);
+
+                boid.CaughtByHunter();
                 graveyard.Add(boid);
 
                 eatenCount++;
@@ -229,11 +225,25 @@ public class BoidGameManager2D : MonoBehaviour
         GameObject boidObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
         boidObject.name = "Boid";
         boidObject.transform.SetParent(transform);
-        boidObject.transform.position = new Vector3(
-            Random.Range(worldMin.x, worldMax.x),
-            Random.Range(worldMin.y, worldMax.y),
-            0f
-        );
+        boidObject.SetActive(false);
+
+        Vector3 spawnPos = Vector3.zero;
+        int attempts = 0;
+        float safeDistance = 6f; 
+
+        while (attempts < 10)
+        {
+            spawnPos = new Vector3(
+                Random.Range(worldMin.x, worldMax.x),
+                Random.Range(worldMin.y, worldMax.y),
+                0f
+            );
+            
+            if (Vector2.Distance(spawnPos, HunterPosition) > safeDistance) break;
+            attempts++;
+        }
+        
+        boidObject.transform.position = spawnPos;
         boidObject.transform.localScale = Vector3.one * boidVisualSize;
 
         Renderer boidRenderer = boidObject.GetComponent<Renderer>();
@@ -249,13 +259,10 @@ public class BoidGameManager2D : MonoBehaviour
         }
 
         BoxCollider2D boidCollider2D = boidObject.AddComponent<BoxCollider2D>();
-
-        if (boidCollider2D == null)
+        if (boidCollider2D != null)
         {
-            return;
+            boidCollider2D.isTrigger = true;
         }
-
-        boidCollider2D.isTrigger = true;
 
         Rigidbody2D boidRb = boidObject.AddComponent<Rigidbody2D>();
         boidRb.gravityScale = 0f;
@@ -267,34 +274,46 @@ public class BoidGameManager2D : MonoBehaviour
         boid.controlMode = boidControlMode;
         boid.Initialize(this, Random.insideUnitCircle.normalized);
 
-        // Inference Mode: inject the trained .onnx brain if one is assigned
-        if (!trainingMode && boidBrain != null)
+        BehaviorParameters bp = boidObject.GetComponent<BehaviorParameters>();
+        if (bp != null)
         {
-            BehaviorParameters bp = boidObject.GetComponent<BehaviorParameters>();
-            if (bp != null)
+            if (boidControlMode == BoidAgent2D.BoidControlMode.ClassicHeuristic)
             {
-                bp.Model = boidBrain;
-                bp.BehaviorType = BehaviorType.InferenceOnly;
+                bp.BehaviorType = BehaviorType.HeuristicOnly;
+            }
+            else
+            {
+                if (!trainingMode && boidBrain != null)
+                {
+                    bp.Model = boidBrain;
+                    bp.BehaviorType = BehaviorType.InferenceOnly;
+                }
+                else if (!trainingMode && boidBrain == null)
+                {
+                    bp.BehaviorType = BehaviorType.HeuristicOnly;
+                }
+                else
+                {
+                    bp.BehaviorType = BehaviorType.Default;
+                }
             }
         }
 
         boids.Add(boid);
+
+        boidObject.SetActive(true);
     }
 
     public void RemoveBoid(BoidAgent2D boid)
     {
-        if (boid == null)
-        {
-            return;
-        }
+        if (boid == null || !boids.Contains(boid)) return;
 
-        if (boids.Remove(boid))
-        {
-            eatenCount++;
-            RefreshScoreUI();
-        }
+        boids.Remove(boid);
+        boid.CaughtByHunter(); 
+        graveyard.Add(boid);
 
-        Destroy(boid.gameObject);
+        eatenCount++;
+        RefreshScoreUI();
     }
 
     private void RefreshScoreUI()
