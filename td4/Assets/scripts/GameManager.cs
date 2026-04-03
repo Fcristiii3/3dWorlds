@@ -11,12 +11,15 @@ public class GameManager : MonoBehaviour
     // --- New Variables for Camera Animation ---
     public Animator cameraIntroAnimator;
     public MonoBehaviour followPlayerCamera; // Reference to the camera's follow script
+    public GameObject introSkipUI;
 
     public AudioSource audioSource;
     public AudioClip lowBeep;
     public AudioClip highBeep;
 
     private ProceduralFlyoverCamera proceduralFlyoverCamera;
+    private bool introActive;
+    private bool countdownStarted;
 
     void Awake()
     {
@@ -35,8 +38,29 @@ public class GameManager : MonoBehaviour
         StartIntro();
     }
 
+    void Update()
+    {
+        if (!introActive || countdownStarted)
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            SkipIntro();
+        }
+    }
+
     public void StartIntro()
     {
+        introActive = true;
+        countdownStarted = false;
+
+        if (introSkipUI != null)
+        {
+            introSkipUI.SetActive(true);
+        }
+
         // 1. Disable player following so the animator can move the camera
         if (followPlayerCamera != null)
         {
@@ -72,9 +96,32 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void SkipIntro()
+    {
+        if (!introActive || countdownStarted)
+        {
+            return;
+        }
+
+        StartCountdown();
+    }
+
     // This method will be triggered by the Animation Event
     public void StartCountdown()
     {
+        if (countdownStarted)
+        {
+            return;
+        }
+
+        countdownStarted = true;
+        introActive = false;
+
+        if (introSkipUI != null)
+        {
+            introSkipUI.SetActive(false);
+        }
+
         // 1. Disable the animator so it doesn't fight the follow script
         if (cameraIntroAnimator != null)
         {

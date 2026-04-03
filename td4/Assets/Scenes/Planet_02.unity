@@ -249,6 +249,10 @@ PrefabInstance:
       value: NewerAiCar
       objectReference: {fileID: 0}
     - target: {fileID: 4943670892248486633, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4943670892248486633, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
       propertyPath: m_TagString
       value: ai
       objectReference: {fileID: 0}
@@ -1196,6 +1200,8 @@ MonoBehaviour:
   flyoverPadding: 20
   startHeight: 0.85
   checkpointCount: 4
+  aiStartRowSpacing: 6
+  aiStartSideSpacing: 3
   straightRotationOffsetDegrees: 0
   cornerRotationOffsetDegrees: 270
 --- !u!1 &1053914510
@@ -1680,9 +1686,25 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -789643815007115873, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: sensorLength
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: -789643815007115873, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: raycastOrigin
+      value: 
+      objectReference: {fileID: 1752501017}
+    - target: {fileID: -789643815007115873, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: brakingDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: -789643815007115873, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
       propertyPath: waypointsHolder
       value: 
       objectReference: {fileID: 9063813836322376538}
+    - target: {fileID: -789643815007115873, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: wallLayer.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
     - target: {fileID: 4943670892248486633, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
       propertyPath: m_Name
       value: NewerAiCar (1)
@@ -1727,9 +1749,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8165052804452578074, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: m_Constraints
+      value: 80
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 5717422634074351434, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1752501017}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
 --- !u!114 &1555795644 stripped
@@ -1743,6 +1772,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b63a94c3c8046a54693cee4fe1ab02ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AIControls
+--- !u!4 &1555795651 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5717422634074351434, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+  m_PrefabInstance: {fileID: 1555795643}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1752501016
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1752501017}
+  m_Layer: 0
+  m_Name: RaycastOrigin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1752501017
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752501016}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.049, y: 0.048, z: 0.51}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1555795651}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1779670305
 GameObject:
   m_ObjectHideFlags: 0
@@ -2307,6 +2372,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 58bf2db3e84301446a3d3cd1d194597a, type: 2}
+    - target: {fileID: 8165052804452578074, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: m_Constraints
+      value: 112
+      objectReference: {fileID: 0}
     - target: {fileID: 8165052804452578074, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
       propertyPath: m_CollisionDetection
       value: 2
