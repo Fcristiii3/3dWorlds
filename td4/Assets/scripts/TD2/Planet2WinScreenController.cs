@@ -7,6 +7,8 @@ public class Planet2WinScreenController : MonoBehaviour
     private GameManager gameManager;
     private GameObject canvasRoot;
     private GameObject panel;
+    private Text titleText;
+    private Text subtitleText;
     private Button restartButton;
     private Button nextPlanetButton;
     private bool isInitialized;
@@ -27,6 +29,11 @@ public class Planet2WinScreenController : MonoBehaviour
 
     public void HandlePlayerFinished()
     {
+        ShowEndScreen(true, null);
+    }
+
+    public void ShowEndScreen(bool didWin, DriftScoring driftScoring)
+    {
         if (!isInitialized)
         {
             Initialize(gameManager != null ? gameManager : GetComponent<GameManager>());
@@ -38,6 +45,21 @@ public class Planet2WinScreenController : MonoBehaviour
         }
 
         isShowing = true;
+
+        if (titleText != null)
+        {
+            titleText.text = didWin ? "You Win" : "You Lose";
+        }
+
+        if (subtitleText != null)
+        {
+            subtitleText.text = BuildSubtitle(didWin, driftScoring);
+        }
+
+        if (nextPlanetButton != null)
+        {
+            nextPlanetButton.gameObject.SetActive(didWin);
+        }
 
         if (gameManager != null)
         {
@@ -94,6 +116,7 @@ public class Planet2WinScreenController : MonoBehaviour
         panelImage.color = new Color(0f, 0f, 0f, 0.78f);
 
         GameObject title = CreateText("Title", panel.transform, defaultFont, "You Win", 58, FontStyle.Bold);
+        titleText = title.GetComponent<Text>();
         RectTransform titleRect = title.GetComponent<RectTransform>();
         titleRect.anchorMin = new Vector2(0.5f, 0.5f);
         titleRect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -101,6 +124,7 @@ public class Planet2WinScreenController : MonoBehaviour
         titleRect.anchoredPosition = new Vector2(0f, 150f);
 
         GameObject subtitle = CreateText("Subtitle", panel.transform, defaultFont, "Choose what happens next.", 26, FontStyle.Normal);
+        subtitleText = subtitle.GetComponent<Text>();
         RectTransform subtitleRect = subtitle.GetComponent<RectTransform>();
         subtitleRect.anchorMin = new Vector2(0.5f, 0.5f);
         subtitleRect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -164,5 +188,20 @@ public class Planet2WinScreenController : MonoBehaviour
         textRect.offsetMax = Vector2.zero;
 
         return button;
+    }
+
+    private static string BuildSubtitle(bool didWin, DriftScoring driftScoring)
+    {
+        if (driftScoring == null)
+        {
+            return didWin ? "Target score reached. Choose what happens next." : "Target score missed. Try again.";
+        }
+
+        int totalScore = Mathf.RoundToInt(driftScoring.totalScore);
+        int targetScore = Mathf.RoundToInt(driftScoring.targetScore);
+
+        return didWin
+            ? $"Target reached! Score: {totalScore} / {targetScore}"
+            : $"Not enough points. Score: {totalScore} / {targetScore}";
     }
 }

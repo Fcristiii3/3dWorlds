@@ -8,6 +8,7 @@ public class LapManager : MonoBehaviour
     public List<Checkpoint> checkpoints;
     public int totalLaps = 3;
     public UIManager ui;
+    public DriftScoring driftScoringScript;
 
     private List<PlayerRank> playerRanks = new List<PlayerRank>();
     private PlayerRank mainPlayerRank;
@@ -39,6 +40,16 @@ public class LapManager : MonoBehaviour
 
         if (mainPlayerRank != null)
         {
+            if (driftScoringScript == null)
+            {
+                driftScoringScript = mainPlayerRank.identity.GetComponent<DriftScoring>();
+            }
+
+            if (driftScoringScript == null)
+            {
+                driftScoringScript = FindFirstObjectByType<DriftScoring>();
+            }
+
             ui.UpdateLapText("Lap " + mainPlayerRank.lapNumber + " / " + totalLaps);
         }
         else
@@ -124,13 +135,36 @@ public class LapManager : MonoBehaviour
                     if (player == mainPlayerRank)
                     {
                         Planet2WinScreenController winScreenController = FindFirstObjectByType<Planet2WinScreenController>();
-                        if (winScreenController != null)
+
+                        if (HasMetDriftTarget())
                         {
-                            winScreenController.HandlePlayerFinished();
+                            Debug.Log("YOU WIN! Score met.");
+
+                            if (winScreenController != null)
+                            {
+                                winScreenController.ShowEndScreen(true, driftScoringScript);
+                            }
+                            else
+                            {
+                                onPlayerFinished.Invoke();
+                            }
                         }
                         else
                         {
-                            onPlayerFinished.Invoke();
+                            Debug.Log("YOU LOSE! Not enough points.");
+
+                            if (winScreenController != null)
+                            {
+                                winScreenController.ShowEndScreen(false, driftScoringScript);
+                            }
+                            else
+                            {
+                                GameManager gameManager = FindFirstObjectByType<GameManager>();
+                                if (gameManager != null)
+                                {
+                                    gameManager.SetRaceFrozen(true);
+                                }
+                            }
                         }
                     }
                 }
@@ -160,5 +194,21 @@ public class LapManager : MonoBehaviour
         }
 
         return 0;
+    }
+
+    private bool HasMetDriftTarget()
+    {
+        if (driftScoringScript == null)
+        {
+            driftScoringScript = FindFirstObjectByType<DriftScoring>();
+        }
+
+        if (driftScoringScript == null)
+        {
+            Debug.LogWarning("LapManager could not find DriftScoring. Treating end-of-race score check as failed.");
+            return false;
+        }
+
+        return driftScoringScript.totalScore >= driftScoringScript.targetScore;
     }
 }
