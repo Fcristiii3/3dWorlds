@@ -1,0 +1,49 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1774648482",
+        "python_version": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\crist\\AppData\\Local\\Python\\pythoncore-3.10-64\\lib\\site-packages\\mlagents\\trainers\\learn.py hunterTrainer.yaml --run-id=Hunter_LevelUp_06 --resume",
+        "mlagents_version": "1.1.0",
+        "mlagents_envs_version": "1.1.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.11.0+cpu",
+        "numpy_version": "1.23.5",
+        "end_time_seconds": "1774648500"
+    },
+    "total": 18.083483199996408,
+    "count": 1,
+    "self": 0.01529749995097518,
+    "children": {
+        "run_training.setup": {
+            "total": 0.15719400002853945,
+            "count": 1,
+            "self": 0.15719400002853945
+        },
+        "TrainerController.start_learning": {
+            "total": 17.910991700016893,
+            "count": 1,
+            "self": 0.00017910002497956157,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 13.018879999988712,
+                    "count": 1,
+                    "self": 13.018879999988712
+                },
+                "TrainerController._save_models": {
+                    "total": 4.8919326000032015,
+                    "count": 1,
+                    "self": 0.007141100009903312,
+                    "children": {
+                        "RLTrainer._checkpoint": {
+                            "total": 4.884791499993298,
+                            "count": 1,
+                            "self": 4.884791499993298
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

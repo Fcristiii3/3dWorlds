@@ -1,0 +1,47 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1774621929",
+        "python_version": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\crist\\AppData\\Local\\Python\\pythoncore-3.10-64\\lib\\site-packages\\mlagents\\trainers\\learn.py multi_agent_trainer_config.yaml --run-id=Boids_Run18",
+        "mlagents_version": "1.1.0",
+        "mlagents_envs_version": "1.1.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.11.0+cpu",
+        "numpy_version": "1.23.5",
+        "end_time_seconds": "1774621950"
+    },
+    "total": 21.5600046000327,
+    "count": 1,
+    "self": 0.01610680005978793,
+    "children": {
+        "run_training.setup": {
+            "total": 0.13179690000833943,
+            "count": 1,
+            "self": 0.13179690000833943
+        },
+        "TrainerController.start_learning": {
+            "total": 21.41210089996457,
+            "count": 1,
+            "self": 0.00044979993253946304,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 21.411642500024755,
+                    "count": 1,
+                    "self": 21.411642500024755
+                },
+                "trainer_threads": {
+                    "total": 9.00006853044033e-07,
+                    "count": 1,
+                    "self": 9.00006853044033e-07
+                },
+                "TrainerController._save_models": {
+                    "total": 7.700000423938036e-06,
+                    "count": 1,
+                    "self": 7.700000423938036e-06
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,51 @@
+{
+    "BoidAgent": {
+        "checkpoints": [
+            {
+                "steps": 428190,
+                "file_path": "results\\Boids_Run26\\BoidAgent\\BoidAgent-428190.onnx",
+                "reward": 62.685390139772345,
+                "creation_time": 1774627116.9425256,
+                "auxillary_file_paths": [
+                    "results\\Boids_Run26\\BoidAgent\\BoidAgent-428190.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 428190,
+            "file_path": "results\\Boids_Run26\\BoidAgent.onnx",
+            "reward": 62.685390139772345,
+            "creation_time": 1774627116.9425256,
+            "auxillary_file_paths": [
+                "results\\Boids_Run26\\BoidAgent\\BoidAgent-428190.pt"
+            ]
+        }
+    },
+    "HunterAgent": {
+        "checkpoints": [
+            {
+                "steps": 6637,
+                "file_path": "results\\Boids_Run26\\HunterAgent\\HunterAgent-6637.onnx",
+                "reward": null,
+                "creation_time": 1774627119.9397178,
+                "auxillary_file_paths": [
+                    "results\\Boids_Run26\\HunterAgent\\HunterAgent-6637.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 6637,
+            "file_path": "results\\Boids_Run26\\HunterAgent.onnx",
+            "reward": null,
+            "creation_time": 1774627119.9397178,
+            "auxillary_file_paths": [
+                "results\\Boids_Run26\\HunterAgent\\HunterAgent-6637.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.11.0+cpu"
+    }
+}

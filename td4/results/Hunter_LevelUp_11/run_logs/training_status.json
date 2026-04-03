@@ -1,0 +1,146 @@
+{
+    "HunterAgent": {
+        "checkpoints": [
+            {
+                "steps": 65161,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-65161.onnx",
+                "reward": null,
+                "creation_time": 1774653953.263602,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-65161.pt"
+                ]
+            },
+            {
+                "steps": 0,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-0.onnx",
+                "reward": null,
+                "creation_time": 1774795933.4107966,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-0.pt"
+                ]
+            },
+            {
+                "steps": 0,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-0.onnx",
+                "reward": null,
+                "creation_time": 1774796133.7427707,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-0.pt"
+                ]
+            },
+            {
+                "steps": 0,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-0.onnx",
+                "reward": null,
+                "creation_time": 1774796197.8884091,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-0.pt"
+                ]
+            },
+            {
+                "steps": 0,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-0.onnx",
+                "reward": null,
+                "creation_time": 1774796257.4624686,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-0.pt"
+                ]
+            },
+            {
+                "steps": 1206,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-1206.onnx",
+                "reward": null,
+                "creation_time": 1774796367.218621,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-1206.pt"
+                ]
+            },
+            {
+                "steps": 0,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-0.onnx",
+                "reward": null,
+                "creation_time": 1774796545.933413,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-0.pt"
+                ]
+            },
+            {
+                "steps": 65762,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-65762.onnx",
+                "reward": null,
+                "creation_time": 1774796611.8247926,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-65762.pt"
+                ]
+            },
+            {
+                "steps": 65161,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-65161.onnx",
+                "reward": null,
+                "creation_time": 1774796675.5896678,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-65161.pt"
+                ]
+            },
+            {
+                "steps": 65161,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-65161.onnx",
+                "reward": null,
+                "creation_time": 1774796723.5061631,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-65161.pt"
+                ]
+            },
+            {
+                "steps": 66962,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-66962.onnx",
+                "reward": null,
+                "creation_time": 1774796858.1699378,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-66962.pt"
+                ]
+            },
+            {
+                "steps": 66972,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-66972.onnx",
+                "reward": null,
+                "creation_time": 1774796934.4598863,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-66972.pt"
+                ]
+            },
+            {
+                "steps": 67573,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-67573.onnx",
+                "reward": null,
+                "creation_time": 1774797134.158793,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-67573.pt"
+                ]
+            },
+            {
+                "steps": 66972,
+                "file_path": "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-66972.onnx",
+                "reward": null,
+                "creation_time": 1774798186.5610569,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-66972.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 66972,
+            "file_path": "results\\Hunter_LevelUp_11\\HunterAgent.onnx",
+            "reward": null,
+            "creation_time": 1774798186.5610569,
+            "auxillary_file_paths": [
+                "results\\Hunter_LevelUp_11\\HunterAgent\\HunterAgent-66972.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.2.2+cpu"
+    }
+}

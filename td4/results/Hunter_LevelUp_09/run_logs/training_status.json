@@ -1,0 +1,29 @@
+{
+    "HunterAgent": {
+        "checkpoints": [
+            {
+                "steps": 1826,
+                "file_path": "results\\Hunter_LevelUp_09\\HunterAgent\\HunterAgent-1826.onnx",
+                "reward": null,
+                "creation_time": 1774649808.9133267,
+                "auxillary_file_paths": [
+                    "results\\Hunter_LevelUp_09\\HunterAgent\\HunterAgent-1826.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1826,
+            "file_path": "results\\Hunter_LevelUp_09\\HunterAgent.onnx",
+            "reward": null,
+            "creation_time": 1774649808.9133267,
+            "auxillary_file_paths": [
+                "results\\Hunter_LevelUp_09\\HunterAgent\\HunterAgent-1826.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.11.0+cpu"
+    }
+}
