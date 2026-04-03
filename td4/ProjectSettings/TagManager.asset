@@ -6,14 +6,16 @@ TagManager:
   tags:
   - AiCar
   - ai
+  - Boid
+  - Hunter
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - PlayerLayer
   - Water
   - UI
-  - 
+  - AiLayer
   - 
   - 
   - 

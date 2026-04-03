@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
+using UnityEngine.SceneManagement;
 
 public class BoidGameManager2D : MonoBehaviour
 {
@@ -34,6 +35,8 @@ public class BoidGameManager2D : MonoBehaviour
 
     [Header("UI")]
     public Text scoreText;
+    public Text timerText;
+    public GameObject gameOverPanel;
 
     private readonly List<BoidAgent2D> boids = new List<BoidAgent2D>();
     private readonly List<BoidAgent2D> graveyard = new List<BoidAgent2D>();
@@ -49,32 +52,26 @@ public class BoidGameManager2D : MonoBehaviour
     {
         Application.runInBackground = true;
 
-        ApplyTrainingModeDefaults();
-
-        if (hunter == null)
+        if (trainingMode)
         {
-            hunter = FindObjectOfType<HunterController2D>();
+            hunterAutoControl = false;
         }
 
         if (hunter != null)
         {
+            hunter.manager = this;
             hunter.useAutoControl = hunterAutoControl;
+            hunter.tag = "Hunter";
         }
 
-        EnsureUIIsReady();
-        StartGame();
-    }
-
-    private void ApplyTrainingModeDefaults()
-    {
-        if (trainingMode)
+        if (scoreText == null)
         {
-            Application.runInBackground = true;
-
-            hunterAutoControl = false;
-            
-            if (hunter != null) hunter.useAutoControl = false;
+            EnsureUIIsReady();
         }
+
+        DrawArenaBorder();
+
+        StartGame();
     }
 
     public void StartGame()
@@ -110,7 +107,7 @@ public class BoidGameManager2D : MonoBehaviour
         foreach (var boid in boids)
         {
             if (boid == null) continue;
-            boid.transform.position = new Vector3(
+            boid.transform.position = transform.position + new Vector3(
                 Random.Range(worldMin.x, worldMax.x),
                 Random.Range(worldMin.y, worldMax.y),
                 0f
@@ -128,25 +125,26 @@ public class BoidGameManager2D : MonoBehaviour
 
     public void ClampAndBounce(ref Vector2 position, ref Vector2 velocity)
     {
-        if (position.x < worldMin.x)
+        Vector2 localPos = position - (Vector2)transform.position;
+        if (localPos.x < worldMin.x)
         {
-            position.x = worldMin.x;
+            position.x = transform.position.x + worldMin.x;
             velocity.x = Mathf.Abs(velocity.x);
         }
-        else if (position.x > worldMax.x)
+        else if (localPos.x > worldMax.x)
         {
-            position.x = worldMax.x;
+            position.x = transform.position.x + worldMax.x;
             velocity.x = -Mathf.Abs(velocity.x);
         }
 
-        if (position.y < worldMin.y)
+        if (localPos.y < worldMin.y)
         {
-            position.y = worldMin.y;
+            position.y = transform.position.y + worldMin.y;
             velocity.y = Mathf.Abs(velocity.y);
         }
-        else if (position.y > worldMax.y)
+        else if (localPos.y > worldMax.y)
         {
-            position.y = worldMax.y;
+            position.y = transform.position.y + worldMax.y;
             velocity.y = -Mathf.Abs(velocity.y);
         }
     }
@@ -187,7 +185,37 @@ public class BoidGameManager2D : MonoBehaviour
 
         if (matchDuration <= 0) matchDuration = 60f;
 
-        StartGame();
+        if (trainingMode)
+        {
+            StartGame();
+        }
+        else
+        {
+            ShowGameOverScreen();
+        }
+    }
+
+    private void ShowGameOverScreen()
+    {
+        Time.timeScale = 0f;
+
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+        }
+    }
+
+    public void RestartLevel()
+    {
+        Time.timeScale = 1f; 
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); 
+    }
+
+    public void LoadNextLevel()
+    {
+        Time.timeScale = 1f; 
+        Debug.Log("Go Next Clicked!");
+        // You can replace the Debug.Log with: SceneManager.LoadScene("NameOfYourNextScene");
     }
 
     public int EatBoidsWithin(Vector2 center, float radius)
@@ -224,6 +252,7 @@ public class BoidGameManager2D : MonoBehaviour
     {
         GameObject boidObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
         boidObject.name = "Boid";
+        boidObject.tag = "Boid";
         boidObject.transform.SetParent(transform);
         boidObject.SetActive(false);
 
@@ -233,7 +262,7 @@ public class BoidGameManager2D : MonoBehaviour
 
         while (attempts < 10)
         {
-            spawnPos = new Vector3(
+            spawnPos = transform.position + new Vector3(
                 Random.Range(worldMin.x, worldMax.x),
                 Random.Range(worldMin.y, worldMax.y),
                 0f
@@ -318,10 +347,16 @@ public class BoidGameManager2D : MonoBehaviour
 
     private void RefreshScoreUI()
     {
+        int seconds = Mathf.Max(0, Mathf.FloorToInt(timeRemaining));
+        if (timerText != null)
+        {
+            timerText.text = $"Time: {seconds}s";
+        }
+
         if (scoreText != null)
         {
-            int seconds = Mathf.Max(0, Mathf.FloorToInt(timeRemaining));
-            scoreText.text = $"Eaten: {eatenCount}   Remaining: {boids.Count}   Time: {seconds}s";
+            string timeStr = timerText == null ? $"   Time: {seconds}s" : "";
+            scoreText.text = $"Eaten: {eatenCount}   Remaining: {boids.Count}{timeStr}";
         }
     }
 
@@ -340,7 +375,7 @@ public class BoidGameManager2D : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Vector3 center = new Vector3((worldMin.x + worldMax.x) * 0.5f, (worldMin.y + worldMax.y) * 0.5f, 0f);
+        Vector3 center = transform.position + new Vector3((worldMin.x + worldMax.x) * 0.5f, (worldMin.y + worldMax.y) * 0.5f, 0f);
         Vector3 size = new Vector3(worldMax.x - worldMin.x, worldMax.y - worldMin.y, 0.1f);
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(center, size);
@@ -348,24 +383,31 @@ public class BoidGameManager2D : MonoBehaviour
 
     private void EnsureUIIsReady()
     {
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = GetComponentInChildren<Canvas>();
+
         if (canvas == null)
         {
             GameObject canvasObject = new GameObject("Canvas");
+            canvasObject.transform.SetParent(transform, false); 
             canvas = canvasObject.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = GetComponentInChildren<Camera>();
+
             CanvasScaler scaler = canvasObject.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasObject.AddComponent<GraphicRaycaster>();
         }
-
-        EventSystem eventSystem = FindObjectOfType<EventSystem>();
-        if (eventSystem == null)
+        else
         {
-            GameObject eventSystemObject = new GameObject("EventSystem");
-            eventSystem = eventSystemObject.AddComponent<EventSystem>();
-            AddBestAvailableInputModule(eventSystemObject);
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            if (canvas.worldCamera == null)
+            {
+                canvas.worldCamera = GetComponentInChildren<Camera>();
+            }
         }
+
+
 
         GameObject hudPanel = FindOrCreateHudPanel(canvas.transform);
         Text hudScoreText = FindOrCreateScoreText(hudPanel.transform);
@@ -444,6 +486,36 @@ public class BoidGameManager2D : MonoBehaviour
         scoreRect.anchoredPosition = Vector2.zero;
         scoreRect.sizeDelta = new Vector2(450f, 60f);
         return text;
+    }
+
+    private void DrawArenaBorder()
+    {
+        LineRenderer line = gameObject.AddComponent<LineRenderer>();
+        line.positionCount = 5;
+        line.startWidth = 0.5f;
+        line.endWidth = 0.5f;
+        line.material = new Material(Shader.Find("Sprites/Default"));
+        line.startColor = Color.black;
+        line.endColor = Color.black;
+        line.sortingOrder = -1;
+
+        // ADDED: Padding to push the visual line outside the physics bounds.
+        // 0.5f is slightly larger than your boidVisualSize (0.45f), making it perfect.
+        float padding = 0.5f;
+
+        Vector3 c = transform.position;
+
+        // Subtract padding from Min, Add padding to Max
+        Vector3 bottomLeft = c + new Vector3(worldMin.x - padding, worldMin.y - padding, 0);
+        Vector3 topLeft = c + new Vector3(worldMin.x - padding, worldMax.y + padding, 0);
+        Vector3 topRight = c + new Vector3(worldMax.x + padding, worldMax.y + padding, 0);
+        Vector3 bottomRight = c + new Vector3(worldMax.x + padding, worldMin.y - padding, 0);
+
+        line.SetPosition(0, bottomLeft);
+        line.SetPosition(1, topLeft);
+        line.SetPosition(2, topRight);
+        line.SetPosition(3, bottomRight);
+        line.SetPosition(4, bottomLeft);
     }
 
     private void DebugLog(string runId, string hypothesisId, string location, string message, Dictionary<string, object> data)

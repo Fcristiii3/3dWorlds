@@ -110,7 +110,7 @@ public class BoidAgent2D : Agent
             Random.Range(manager.worldMin.x, manager.worldMax.x),
             Random.Range(manager.worldMin.y, manager.worldMax.y)
         );
-        transform.position = new Vector3(spawnPos.x, spawnPos.y, 0f);
+        transform.position = manager.transform.position + new Vector3(spawnPos.x, spawnPos.y, 0f);
         velocity = Random.insideUnitCircle.normalized * moveSpeed;
         rb.linearVelocity = velocity;
     }
@@ -212,35 +212,47 @@ public class BoidAgent2D : Agent
         Vector2 vel = rb.linearVelocity;
         bool outOfBounds = false;
 
-        if (pos.x < manager.worldMin.x) { 
-            pos.x = manager.worldMin.x; 
-            vel.x = Mathf.Abs(vel.x); 
-            outOfBounds = true; 
+        // FIX: Calculate global boundaries relative to where this specific Manager is located
+        float globalMinX = manager.transform.position.x + manager.worldMin.x;
+        float globalMaxX = manager.transform.position.x + manager.worldMax.x;
+        float globalMinY = manager.transform.position.y + manager.worldMin.y;
+        float globalMaxY = manager.transform.position.y + manager.worldMax.y;
+
+        if (pos.x < globalMinX)
+        {
+            pos.x = globalMinX;
+            vel.x = Mathf.Abs(vel.x);
+            outOfBounds = true;
         }
-        else if (pos.x > manager.worldMax.x) { 
-            pos.x = manager.worldMax.x; 
-            vel.x = -Mathf.Abs(vel.x); 
-            outOfBounds = true; 
+        else if (pos.x > globalMaxX)
+        {
+            pos.x = globalMaxX;
+            vel.x = -Mathf.Abs(vel.x);
+            outOfBounds = true;
         }
 
-        if (pos.y < manager.worldMin.y) {
-            pos.y = manager.worldMin.y; 
-            vel.y = Mathf.Abs(vel.y); 
-            outOfBounds = true; 
+        if (pos.y < globalMinY)
+        {
+            pos.y = globalMinY;
+            vel.y = Mathf.Abs(vel.y);
+            outOfBounds = true;
         }
-        else if (pos.y > manager.worldMax.y) { pos.y = manager.worldMax.y; 
-            vel.y = -Mathf.Abs(vel.y); 
-            outOfBounds = true; }
+        else if (pos.y > globalMaxY)
+        {
+            pos.y = globalMaxY;
+            vel.y = -Mathf.Abs(vel.y);
+            outOfBounds = true;
+        }
 
         if (outOfBounds)
         {
             rb.position = pos;
             rb.linearVelocity = vel;
             velocity = vel;
-            
-            if (controlMode == BoidControlMode.MlAgent) 
+
+            if (controlMode == BoidControlMode.MlAgent)
             {
-                AddReward(-0.05f); 
+                AddReward(-0.05f);
             }
         }
     }
