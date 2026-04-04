@@ -34,7 +34,7 @@ public class StorySequencer2 : MonoBehaviour
         yield return new WaitForSeconds(3f); 
 
         yield return StartCoroutine(FadeCanvas(scene2_PrincessWalle, 0f, 1f));
-        yield return new WaitForSeconds(4f); 
+        yield return new WaitForSeconds(6f); 
 
         SceneManager.LoadScene(gameSceneName);
     }

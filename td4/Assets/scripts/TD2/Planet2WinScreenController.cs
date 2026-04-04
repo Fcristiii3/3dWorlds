@@ -85,7 +85,7 @@ public class Planet2WinScreenController : MonoBehaviour
 
     public void NextPlanet()
     {
-        Debug.Log("Next Planet button clicked. Wire this button to your next scene when ready.");
+        SceneManager.LoadScene("Story_04");
     }
 
     private void CreateUi()

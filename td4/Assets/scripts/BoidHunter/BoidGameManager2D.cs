@@ -209,6 +209,9 @@ public class BoidGameManager2D : MonoBehaviour
     {
         Time.timeScale = 0f;
 
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
