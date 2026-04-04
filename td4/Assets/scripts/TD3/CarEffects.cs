@@ -68,6 +68,22 @@ public class CarEffects : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision == null || collision.collider == null)
+        {
+            return;
+        }
+
+        Debug.LogWarning("I just hit: " + collision.gameObject.name + " on Layer: " + LayerMask.LayerToName(collision.gameObject.layer));
+
+        GameObject hitObject = collision.gameObject;
+        bool hitWallLayer = hitObject.layer == LayerMask.NameToLayer("Wall");
+        bool hitWallTag = hitObject.CompareTag("Wall");
+
+        if (!hitWallLayer && !hitWallTag)
+        {
+            return;
+        }
+
         PlayCollisionSfx(collision);
     }
 
