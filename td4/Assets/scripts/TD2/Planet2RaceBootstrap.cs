@@ -35,6 +35,15 @@ public class Planet2RaceBootstrap : MonoBehaviour
     [Min(0)]
     [SerializeField] private int minStraightsBetweenTurns = 0;
 
+    [Header("Orbit")]
+    [SerializeField] private Transform orbitCenterMarker;
+    [Min(0f)]
+    [SerializeField] private float targetRadius = 0f;
+    [Min(0f)]
+    [SerializeField] private float radiusTolerance = 20f;
+    [Min(0f)]
+    [SerializeField] public float exclusionRadius = 25f;
+
     [Header("Track Scaling")]
     [Min(0.1f)]
     [SerializeField] private float tileSize = 10f;
@@ -93,7 +102,11 @@ public class Planet2RaceBootstrap : MonoBehaviour
                 turnProbability = turnProbability,
                 maxConsecutiveStraights = maxConsecutiveStraights,
                 alternateTurnProbability = alternateTurnProbability,
-                minStraightsBetweenTurns = minStraightsBetweenTurns
+                minStraightsBetweenTurns = minStraightsBetweenTurns,
+                tileSize = tileSize,
+                targetRadius = orbitCenterMarker != null ? targetRadius : 0f,
+                radiusTolerance = radiusTolerance,
+                exclusionRadius = orbitCenterMarker != null ? exclusionRadius : 0f
             });
 
         Planet2LoopBuilder.Result layout = loopBuilder.Generate();
@@ -116,6 +129,7 @@ public class Planet2RaceBootstrap : MonoBehaviour
                 checkpointCount = checkpointCount,
                 straightRotationOffsetDegrees = straightRotationOffsetDegrees,
                 cornerRotationOffsetDegrees = cornerRotationOffsetDegrees,
+                worldCenterOffset = orbitCenterMarker != null ? orbitCenterMarker.position : Vector3.zero,
                 flyoverHeight = flyoverHeight,
                 flyoverPadding = flyoverPadding
             });
@@ -139,7 +153,7 @@ public class Planet2RaceBootstrap : MonoBehaviour
         bool flyoverConfigured = ConfigureProceduralFlyover(gameManager, buildResult);
         if (!flyoverConfigured)
         {
-            SnapCameraToPlayer(gameManager, playerControl);
+            ForceGameplayCameraHandoff(gameManager);
         }
 
         EnsureWinScreenController(gameManager);
@@ -311,22 +325,32 @@ public class Planet2RaceBootstrap : MonoBehaviour
         }
     }
 
-    private static void SnapCameraToPlayer(GameManager gameManager, PlayerControl playerControl)
+    public void ForceGameplayCameraHandoff(GameManager gameManager)
     {
-        followPlayer followCamera = gameManager.followPlayerCamera as followPlayer;
-        if (followCamera == null)
+        if (gameManager == null || gameManager.playerControls == null)
         {
-            followPlayer[] followCameras = UnityEngine.Object.FindObjectsByType<followPlayer>(FindObjectsSortMode.None);
-            if (followCameras.Length > 0)
-            {
-                followCamera = followCameras[0];
-                gameManager.followPlayerCamera = followCamera;
-            }
+            return;
         }
 
+        if (gameManager.cameraIntroAnimator != null)
+        {
+            gameManager.cameraIntroAnimator.enabled = false;
+        }
+
+        ProceduralFlyoverCamera flyoverCamera = ResolveFlyoverCamera();
+        if (flyoverCamera != null)
+        {
+            flyoverCamera.StopFlyover();
+            flyoverCamera.enabled = false;
+        }
+
+        followPlayer followCamera = ResolveFollowCamera(gameManager);
         if (followCamera != null)
         {
-            followCamera.player = playerControl.transform;
+            followCamera.enabled = false;
+            followCamera.player = gameManager.playerControls.transform;
+            TeleportCameraToFollowTarget(followCamera, gameManager.playerControls.transform);
+            followCamera.enabled = true;
             followCamera.SnapToTarget();
             return;
         }
@@ -334,11 +358,53 @@ public class Planet2RaceBootstrap : MonoBehaviour
         Camera mainCamera = Camera.main;
         if (mainCamera != null)
         {
-            Quaternion yawRotation = Quaternion.Euler(0f, playerControl.transform.eulerAngles.y, 0f);
+            Quaternion yawRotation = Quaternion.Euler(0f, gameManager.playerControls.transform.eulerAngles.y, 0f);
             mainCamera.transform.SetPositionAndRotation(
-                playerControl.transform.position + (yawRotation * new Vector3(0f, 8f, -12f)),
+                gameManager.playerControls.transform.position + (yawRotation * new Vector3(0f, 8f, -12f)),
                 yawRotation * Quaternion.Euler(35f, 0f, 0f));
         }
+    }
+
+    private static followPlayer ResolveFollowCamera(GameManager gameManager)
+    {
+        followPlayer followCamera = gameManager.followPlayerCamera as followPlayer;
+        if (followCamera != null)
+        {
+            return followCamera;
+        }
+
+        followPlayer[] followCameras = UnityEngine.Object.FindObjectsByType<followPlayer>(FindObjectsSortMode.None);
+        if (followCameras.Length <= 0)
+        {
+            return null;
+        }
+
+        followCamera = followCameras[0];
+        gameManager.followPlayerCamera = followCamera;
+        return followCamera;
+    }
+
+    private static ProceduralFlyoverCamera ResolveFlyoverCamera()
+    {
+        ProceduralFlyoverCamera flyoverCamera = FindFirstObjectByType<ProceduralFlyoverCamera>();
+        if (flyoverCamera != null)
+        {
+            return flyoverCamera;
+        }
+
+        Camera mainCamera = Camera.main;
+        return mainCamera != null ? mainCamera.GetComponent<ProceduralFlyoverCamera>() : null;
+    }
+
+    private static void TeleportCameraToFollowTarget(followPlayer followCamera, Transform playerTransform)
+    {
+        if (followCamera == null || playerTransform == null)
+        {
+            return;
+        }
+
+        followCamera.player = playerTransform;
+        followCamera.SnapToTarget();
     }
 
     private static bool ConfigureProceduralFlyover(GameManager gameManager, Planet2ProceduralTrackGenerator.BuildResult buildResult)

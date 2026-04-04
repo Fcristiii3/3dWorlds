@@ -21,6 +21,10 @@ public sealed class Planet2LoopBuilder
         public int maxConsecutiveStraights = 1;
         public float alternateTurnProbability = 0.8f;
         public int minStraightsBetweenTurns = 0;
+        public float tileSize = 10f;
+        public float targetRadius = 0f;
+        public float radiusTolerance = 20f;
+        public float exclusionRadius = 25f;
         public bool useRandomSeed = true;
         public int seed;
     }
@@ -107,6 +111,11 @@ public sealed class Planet2LoopBuilder
 
             ApplySerpentineRules(candidate, targetTrackLength, turnBias, ref lastTurnSense);
 
+            if (ViolatesExclusionZone(candidate))
+            {
+                continue;
+            }
+
             float candidateScore = ScoreLoop(candidate, targetTrackLength, turnBias);
             if (bestLoop == null || candidateScore > bestScore)
             {
@@ -150,6 +159,8 @@ public sealed class Planet2LoopBuilder
             validSizes = BuildValidRectangleSizes(clampedMinWidth, clampedMaxWidth, clampedMinHeight, clampedMaxHeight, targetTrackLength);
         }
 
+        validSizes = FilterValidSizesByExclusion(validSizes);
+
         Vector2Int selectedSize = validSizes.Count > 0 ? validSizes[random.Next(validSizes.Count)] : new Vector2Int(4, 4);
         int width = selectedSize.x;
         int height = selectedSize.y;
@@ -171,7 +182,16 @@ public sealed class Planet2LoopBuilder
         int clampedMaxWidth = Mathf.Clamp(settings.maxRectangleWidth, 4, settings.gridWidth - 4);
         int clampedMaxHeight = Mathf.Clamp(settings.maxRectangleHeight, 4, settings.gridHeight - 4);
         List<Vector2Int> validSizes = BuildValidRectangleSizes(4, clampedMaxWidth, 4, clampedMaxHeight, targetTrackLength);
-        Vector2Int selectedSize = validSizes.Count > 0 ? validSizes[0] : new Vector2Int(4, 4);
+        validSizes = FilterValidSizesByExclusion(validSizes, false);
+
+        if (validSizes.Count == 0 && HasExclusionZone())
+        {
+            validSizes = FilterValidSizesByExclusion(
+                BuildValidRectangleSizes(4, clampedMaxWidth, 4, clampedMaxHeight, int.MaxValue),
+                false);
+        }
+
+        Vector2Int selectedSize = validSizes.Count > 0 ? validSizes[0] : new Vector2Int(clampedMaxWidth, clampedMaxHeight);
 
         int width = selectedSize.x;
         int height = selectedSize.y;
@@ -240,11 +260,11 @@ public sealed class Planet2LoopBuilder
 
         foreach (StraightRun run in runs)
         {
-            if (TryExpandRun(workingLoop, run, targetTrackLength, turnBias, ref lastTurnSense, out List<Vector2Int> expandedLoop))
-            {
-                sourceLoop.Clear();
-                sourceLoop.AddRange(expandedLoop);
-                return true;
+                if (TryExpandRun(workingLoop, run, targetTrackLength, turnBias, ref lastTurnSense, out List<Vector2Int> expandedLoop))
+                {
+                    sourceLoop.Clear();
+                    sourceLoop.AddRange(expandedLoop);
+                    return true;
             }
         }
 
@@ -264,7 +284,7 @@ public sealed class Planet2LoopBuilder
         List<Vector2Int> expandedSegment = BuildExpandedSegment(sourceLoop, run, perpendicular, offset);
         List<Vector2Int> candidate = ReplaceSpan(sourceLoop, run.StartCellIndex, run.EndCellIndex, expandedSegment);
 
-        if (candidate.Count > targetTrackLength || !IsWithinBounds(candidate) || !IsSimpleLoop(candidate))
+        if (candidate.Count > targetTrackLength || !IsWithinBounds(candidate) || ViolatesExclusionZone(candidate) || !IsSimpleLoop(candidate))
         {
             return false;
         }
@@ -351,7 +371,7 @@ public sealed class Planet2LoopBuilder
     {
         expandedLoop = null;
 
-        List<TurnChoice> turnChoices = BuildPreferredTurnChoices(run.Direction, lastTurnSense);
+        List<TurnChoice> turnChoices = BuildPreferredTurnChoices(sourceLoop, run, lastTurnSense);
         List<int> offsets = BuildOffsetOrder(turnBias);
 
         foreach (TurnChoice turnChoice in turnChoices)
@@ -474,16 +494,47 @@ public sealed class Planet2LoopBuilder
         return offsets;
     }
 
-    private List<TurnChoice> BuildPreferredTurnChoices(Vector2Int travelDirection, TurnSense? lastTurnSense)
+    private List<TurnChoice> BuildPreferredTurnChoices(List<Vector2Int> sourceLoop, StraightRun run, TurnSense? lastTurnSense)
     {
         TurnSense preferredTurnSense = ChoosePreferredTurnSense(lastTurnSense);
+        if (TryGetOrbitPreferredTurnSense(sourceLoop, run, out TurnSense orbitPreferredTurnSense))
+        {
+            preferredTurnSense = orbitPreferredTurnSense;
+        }
+
         TurnSense fallbackTurnSense = preferredTurnSense == TurnSense.Left ? TurnSense.Right : TurnSense.Left;
 
         return new List<TurnChoice>
         {
-            CreateTurnChoice(travelDirection, preferredTurnSense),
-            CreateTurnChoice(travelDirection, fallbackTurnSense)
+            CreateTurnChoice(run.Direction, preferredTurnSense),
+            CreateTurnChoice(run.Direction, fallbackTurnSense)
         };
+    }
+
+    private List<Vector2Int> FilterValidSizesByExclusion(List<Vector2Int> validSizes, bool allowOriginalFallback = true)
+    {
+        if (!HasExclusionZone() || validSizes == null || validSizes.Count == 0)
+        {
+            return validSizes;
+        }
+
+        var filteredSizes = new List<Vector2Int>(validSizes.Count);
+        for (int i = 0; i < validSizes.Count; i++)
+        {
+            Vector2Int size = validSizes[i];
+            List<Vector2Int> rectangleLoop = BuildRectangleLoop(0, 0, size.x, size.y);
+            if (!ViolatesExclusionZone(rectangleLoop))
+            {
+                filteredSizes.Add(size);
+            }
+        }
+
+        if (filteredSizes.Count > 0)
+        {
+            return filteredSizes;
+        }
+
+        return allowOriginalFallback ? validSizes : filteredSizes;
     }
 
     private TurnSense ChoosePreferredTurnSense(TurnSense? lastTurnSense)
@@ -552,7 +603,52 @@ public sealed class Planet2LoopBuilder
         float footprintScore = -footprintArea * 0.15f;
         float straightPenalty = -GetExcessStraightPenalty(loop) * Mathf.Lerp(4f, 10f, turnBias);
         float turnAlternationScore = ScoreTurnAlternation(loop) * Mathf.Lerp(0.5f, 2f, Mathf.Clamp01(settings.alternateTurnProbability));
-        return lengthScore + turnScore + footprintScore + straightPenalty + turnAlternationScore;
+        float orbitScore = ScoreOrbitPreference(loop);
+        return lengthScore + turnScore + footprintScore + straightPenalty + turnAlternationScore + orbitScore;
+    }
+
+    private float ScoreOrbitPreference(List<Vector2Int> loop)
+    {
+        if (!HasOrbitPreference() || loop == null || loop.Count == 0)
+        {
+            return 0f;
+        }
+
+        Vector2 loopCenter = GetCurrentLoopCenter(loop);
+        float targetRadiusWorld = Mathf.Max(0f, settings.targetRadius);
+        float radiusToleranceWorld = Mathf.Max(0f, settings.radiusTolerance);
+        float minimumRadius = Mathf.Max(0f, targetRadiusWorld - radiusToleranceWorld);
+        float maximumRadius = targetRadiusWorld + radiusToleranceWorld;
+        float totalOutsideDistance = 0f;
+        float totalTargetDeviation = 0f;
+        int cellsInsideBand = 0;
+
+        for (int i = 0; i < loop.Count; i++)
+        {
+            Vector2 centeredCell = (Vector2)loop[i] - loopCenter;
+            float radiusWorld = centeredCell.magnitude * Mathf.Max(0.1f, settings.tileSize);
+
+            if (radiusWorld < minimumRadius)
+            {
+                totalOutsideDistance += minimumRadius - radiusWorld;
+            }
+            else if (radiusWorld > maximumRadius)
+            {
+                totalOutsideDistance += radiusWorld - maximumRadius;
+            }
+            else
+            {
+                cellsInsideBand++;
+            }
+
+            totalTargetDeviation += Mathf.Abs(radiusWorld - targetRadiusWorld);
+        }
+
+        float averageOutsideDistance = totalOutsideDistance / loop.Count;
+        float averageTargetDeviation = totalTargetDeviation / loop.Count;
+        float insideBandRatio = (float)cellsInsideBand / loop.Count;
+
+        return (insideBandRatio * 25f) - (averageOutsideDistance * 2f) - (averageTargetDeviation * 0.25f);
     }
 
     private static int CountCorners(List<Vector2Int> loop)
@@ -668,6 +764,91 @@ public sealed class Planet2LoopBuilder
         }
 
         return runs;
+    }
+
+    private bool HasExclusionZone()
+    {
+        return settings.exclusionRadius > 0f && settings.tileSize > 0f;
+    }
+
+    private bool ViolatesExclusionZone(List<Vector2Int> loop)
+    {
+        if (!HasExclusionZone() || loop == null || loop.Count == 0)
+        {
+            return false;
+        }
+
+        GetBounds(loop, out int minX, out int maxX, out int minY, out int maxY);
+        int offsetX = Mathf.RoundToInt((minX + maxX) * 0.5f);
+        int offsetY = Mathf.RoundToInt((minY + maxY) * 0.5f);
+        float tileSize = Mathf.Max(0.1f, settings.tileSize);
+        float exclusionRadiusSqr = settings.exclusionRadius * settings.exclusionRadius;
+
+        for (int i = 0; i < loop.Count; i++)
+        {
+            Vector2 centeredWorldPosition = new Vector2(
+                (loop[i].x - offsetX) * tileSize,
+                (loop[i].y - offsetY) * tileSize);
+
+            if (centeredWorldPosition.sqrMagnitude < exclusionRadiusSqr)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool HasOrbitPreference()
+    {
+        return settings.targetRadius > 0f && settings.tileSize > 0f;
+    }
+
+    private bool TryGetOrbitPreferredTurnSense(List<Vector2Int> loop, StraightRun run, out TurnSense preferredTurnSense)
+    {
+        preferredTurnSense = TurnSense.Left;
+
+        if (!HasOrbitPreference() || loop == null || loop.Count == 0)
+        {
+            return false;
+        }
+
+        Vector2 loopCenter = GetCurrentLoopCenter(loop);
+        Vector2 startCell = loop[run.StartCellIndex];
+        Vector2 endCell = loop[run.EndCellIndex];
+        Vector2 samplePoint = (startCell + endCell) * 0.5f;
+        Vector2 radialFromCenter = samplePoint - loopCenter;
+
+        if (radialFromCenter.sqrMagnitude <= 0.0001f)
+        {
+            return false;
+        }
+
+        float sampleRadiusWorld = radialFromCenter.magnitude * Mathf.Max(0.1f, settings.tileSize);
+        float minimumRadius = Mathf.Max(0f, settings.targetRadius - Mathf.Max(0f, settings.radiusTolerance));
+        float maximumRadius = settings.targetRadius + Mathf.Max(0f, settings.radiusTolerance);
+
+        if (sampleRadiusWorld >= minimumRadius && sampleRadiusWorld <= maximumRadius)
+        {
+            return false;
+        }
+
+        Vector2 desiredDirection = sampleRadiusWorld > maximumRadius
+            ? -radialFromCenter.normalized
+            : radialFromCenter.normalized;
+
+        Vector2 leftDirection = PerpendicularLeft(run.Direction);
+        Vector2 rightDirection = PerpendicularRight(run.Direction);
+        float leftAlignment = Vector2.Dot(leftDirection, desiredDirection);
+        float rightAlignment = Vector2.Dot(rightDirection, desiredDirection);
+
+        if (Mathf.Approximately(leftAlignment, rightAlignment))
+        {
+            return false;
+        }
+
+        preferredTurnSense = leftAlignment > rightAlignment ? TurnSense.Left : TurnSense.Right;
+        return true;
     }
 
     private bool IsWithinBounds(List<Vector2Int> loop)
@@ -813,6 +994,12 @@ public sealed class Planet2LoopBuilder
         }
 
         return rotated;
+    }
+
+    private static Vector2 GetCurrentLoopCenter(List<Vector2Int> loop)
+    {
+        GetBounds(loop, out int minX, out int maxX, out int minY, out int maxY);
+        return new Vector2((minX + maxX) * 0.5f, (minY + maxY) * 0.5f);
     }
 
     private static void GetBounds(List<Vector2Int> loop, out int minX, out int maxX, out int minY, out int maxY)

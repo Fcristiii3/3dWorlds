@@ -210,6 +210,17 @@ public class GameManager : MonoBehaviour
 
     public void StartRacing()
     {
+        Planet2RaceBootstrap planet2RaceBootstrap = GetComponent<Planet2RaceBootstrap>();
+        if (planet2RaceBootstrap == null)
+        {
+            planet2RaceBootstrap = FindFirstObjectByType<Planet2RaceBootstrap>();
+        }
+
+        if (planet2RaceBootstrap != null)
+        {
+            planet2RaceBootstrap.ForceGameplayCameraHandoff(this);
+        }
+
         FreezePlayers(false);
     }
 
@@ -400,4 +411,5 @@ public class GameManager : MonoBehaviour
 
         return true;
     }
+
 }

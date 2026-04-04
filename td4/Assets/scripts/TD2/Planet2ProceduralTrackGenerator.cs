@@ -52,6 +52,7 @@ public sealed class Planet2ProceduralTrackGenerator
         public float cornerRotationOffsetDegrees;
         public float checkpointHeight = 10f;
         public float checkpointThickness = 2f;
+        public Vector3 worldCenterOffset = Vector3.zero;
         public float flyoverHeight = 40f;
         public float flyoverPadding = 20f;
     }
@@ -460,7 +461,7 @@ public sealed class Planet2ProceduralTrackGenerator
 
     private Vector3 GridToWorld(Vector2Int cell)
     {
-        return new Vector3(cell.x * cellSize, 0f, cell.y * cellSize);
+        return settings.worldCenterOffset + new Vector3(cell.x * cellSize, 0f, cell.y * cellSize);
     }
 
     private Vector3 GridToWorldDirection(Vector2Int direction)
