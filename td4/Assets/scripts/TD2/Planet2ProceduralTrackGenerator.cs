@@ -270,6 +270,11 @@ public sealed class Planet2ProceduralTrackGenerator
         decoration.transform.SetPositionAndRotation(
             GridToWorld(startCell),
             Quaternion.LookRotation(startForward, Vector3.up));
+
+        if (decoration.GetComponent<StartFinishLightAutoWire>() == null)
+        {
+            decoration.AddComponent<StartFinishLightAutoWire>();
+        }
     }
 
     private bool SpawnStreetLamp(Transform trackPieceTransform, bool placeOnLeftSide)

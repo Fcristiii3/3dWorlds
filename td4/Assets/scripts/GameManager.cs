@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public AIControls[] aiControls;
     public LapManager lapTracker;
     public TricolorLights tricolorLights;
+    public Light[] racingLights;
 
     // --- New Variables for Camera Animation ---
     public Animator cameraIntroAnimator;
@@ -20,9 +21,13 @@ public class GameManager : MonoBehaviour
     private ProceduralFlyoverCamera proceduralFlyoverCamera;
     private bool introActive;
     private bool countdownStarted;
+    private Color[] originalRacingLightColors;
+    private Light[] cachedRacingLightReferences;
 
     void Awake()
     {
+        ResetRacingLights();
+
         Planet2RaceBootstrap planet2RaceBootstrap = GetComponent<Planet2RaceBootstrap>();
         if (planet2RaceBootstrap == null)
         {
@@ -55,6 +60,7 @@ public class GameManager : MonoBehaviour
     {
         introActive = true;
         countdownStarted = false;
+        ResetRacingLights();
 
         if (introSkipUI != null)
         {
@@ -146,6 +152,7 @@ public class GameManager : MonoBehaviour
         }
 
         // 3. Begin the beep countdown
+        ResetRacingLights();
         StartCoroutine("Countdown");
     }
 
@@ -176,24 +183,29 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1);
         Debug.Log("3");
         if (tricolorLights != null) tricolorLights.SetProgress(1);
+        SetCountdownLights(1);
         if (audioSource != null && lowBeep != null) audioSource.PlayOneShot(lowBeep);
         yield return new WaitForSeconds(1);
         Debug.Log("2");
         if (tricolorLights != null) tricolorLights.SetProgress(2);
+        SetCountdownLights(2);
         if (audioSource != null && lowBeep != null) audioSource.PlayOneShot(lowBeep);
         yield return new WaitForSeconds(1);
         Debug.Log("1");
         if (tricolorLights != null) tricolorLights.SetProgress(3);
+        SetCountdownLights(3);
         if (audioSource != null && lowBeep != null) audioSource.PlayOneShot(lowBeep);
         yield return new WaitForSeconds(1);
         Debug.Log("GO");
         if (tricolorLights != null) tricolorLights.SetProgress(4);
+        SetCountdownLights(4);
         if (audioSource != null && highBeep != null) audioSource.PlayOneShot(highBeep);
 
         StartRacing();
 
         yield return new WaitForSeconds(2f);
         if (tricolorLights != null) tricolorLights.SetAllLightsOff();
+        ResetRacingLights();
     }
 
     public void StartRacing()
@@ -240,5 +252,152 @@ public class GameManager : MonoBehaviour
             rb.angularVelocity = Vector3.zero; // Stops the "spinning" or "burnout" rotation
             rb.Sleep(); // Forces the physics engine to ignore the object until it's "woken up"
         }
+    }
+
+    private void ResetRacingLights()
+    {
+        if (racingLights == null)
+        {
+            return;
+        }
+
+        CacheRacingLightColorsIfNeeded();
+
+        for (int i = 0; i < racingLights.Length; i++)
+        {
+            if (racingLights[i] != null)
+            {
+                if (originalRacingLightColors != null && i < originalRacingLightColors.Length)
+                {
+                    racingLights[i].color = originalRacingLightColors[i];
+                }
+
+                racingLights[i].enabled = false;
+            }
+        }
+    }
+
+    private void SetCountdownLights(int stage)
+    {
+        if (racingLights == null || racingLights.Length == 0)
+        {
+            return;
+        }
+
+        CacheRacingLightColorsIfNeeded();
+
+        if (stage <= 0)
+        {
+            return;
+        }
+
+        if (stage == 1)
+        {
+            EnableRacingLight(0);
+            return;
+        }
+
+        if (stage == 2)
+        {
+            EnableRacingLight(0);
+            EnableRacingLight(1);
+            return;
+        }
+
+        if (stage == 3)
+        {
+            EnableRacingLight(0);
+            EnableRacingLight(1);
+            EnableRacingLight(2);
+            return;
+        }
+
+        if (stage == 4)
+        {
+            SetGoLightState();
+        }
+    }
+
+    private void EnableRacingLight(int index)
+    {
+        if (racingLights == null || index < 0 || index >= racingLights.Length)
+        {
+            return;
+        }
+
+        Light racingLight = racingLights[index];
+        if (racingLight == null)
+        {
+            return;
+        }
+
+        racingLight.enabled = true;
+    }
+
+    private void SetGoLightState()
+    {
+        if (racingLights == null)
+        {
+            return;
+        }
+
+        EnableRacingLight(0);
+        EnableRacingLight(1);
+        EnableRacingLight(2);
+
+        for (int i = 0; i < 3 && i < racingLights.Length; i++)
+        {
+            if (racingLights[i] != null)
+            {
+                racingLights[i].color = Color.green;
+            }
+        }
+    }
+
+    private void CacheRacingLightColorsIfNeeded()
+    {
+        if (racingLights == null)
+        {
+            originalRacingLightColors = null;
+            cachedRacingLightReferences = null;
+            return;
+        }
+
+        if (HaveSameRacingLightReferences(cachedRacingLightReferences, racingLights))
+        {
+            return;
+        }
+
+        cachedRacingLightReferences = new Light[racingLights.Length];
+        originalRacingLightColors = new Color[racingLights.Length];
+
+        for (int i = 0; i < racingLights.Length; i++)
+        {
+            cachedRacingLightReferences[i] = racingLights[i];
+            originalRacingLightColors[i] = racingLights[i] != null ? racingLights[i].color : Color.white;
+        }
+    }
+
+    private static bool HaveSameRacingLightReferences(Light[] cachedLights, Light[] currentLights)
+    {
+        if (cachedLights == null || currentLights == null)
+        {
+            return false;
+        }
+
+        if (cachedLights.Length != currentLights.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < cachedLights.Length; i++)
+        {
+            if (cachedLights[i] != currentLights[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

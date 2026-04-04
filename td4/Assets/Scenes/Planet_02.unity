@@ -1466,6 +1466,11 @@ MonoBehaviour:
   - {fileID: 353531453}
   lapTracker: {fileID: 1838426620}
   tricolorLights: {fileID: 0}
+  racingLights:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   cameraIntroAnimator: {fileID: 0}
   followPlayerCamera: {fileID: 330585547}
   introSkipUI: {fileID: 0}
