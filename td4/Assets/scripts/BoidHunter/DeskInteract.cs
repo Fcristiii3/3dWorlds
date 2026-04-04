@@ -9,13 +9,11 @@ public class DeskInteract : MonoBehaviour
 
     void OnMouseDown()
     {
-        // Calculate distance between player and desk
         float dist = Vector3.Distance(player.position, transform.position);
 
         if (dist <= interactionDistance)
         {
-            Debug.Log("Loading next scene...");
-            //SceneManager.LoadScene(sceneToLoad);
+            SceneManager.LoadScene(sceneToLoad);
         }
         else
         {

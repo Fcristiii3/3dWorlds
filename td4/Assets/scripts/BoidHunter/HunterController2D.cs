@@ -10,6 +10,7 @@ public class HunterController2D : Agent
     [Header("Hunter Settings")]
     public float moveSpeed = 10f;
     public float eatRadius = 1f;
+    public float viewRadius = 15.8f;
     public Color hunterColor = new Color(1f, 0.45f, 0.3f, 1f);
     
     [Header("Controls")]
@@ -19,6 +20,8 @@ public class HunterController2D : Agent
     [Header("Testing & Debugging")]
     public bool useManualNormalization = true;
     public bool showDiagnostics = false;
+
+
 
     public BoidGameManager2D manager;
     private Rigidbody2D hunterRigidbody;
@@ -112,8 +115,8 @@ public class HunterController2D : Agent
         {
             if (boid == null || boid.isDead) continue; 
             Vector2 offset = (Vector2)boid.transform.position - (Vector2)transform.position;
-            
-            if (offset.sqrMagnitude < 250f) // viewing distance
+
+            if (offset.sqrMagnitude < (viewRadius * viewRadius)) // viewing distance
             {
                 Rigidbody2D boidRb = boid.GetComponent<Rigidbody2D>();
                 

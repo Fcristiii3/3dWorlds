@@ -32,6 +32,9 @@ public class BoidGameManager2D : MonoBehaviour
     public HunterController2D hunter;
     public bool hunterAutoControl;
 
+    [Header("Game Modes")]
+    public static bool applyHunterBuffs = false;
+
     [Header("UI")]
     public string teamName;
     public Text scoreText;
@@ -62,6 +65,12 @@ public class BoidGameManager2D : MonoBehaviour
             hunter.manager = this;
             hunter.useAutoControl = hunterAutoControl;
             hunter.tag = "Hunter";
+
+            if (applyHunterBuffs)
+            {
+                hunter.eatRadius = 2.2f;      
+                hunter.viewRadius = 20f;      
+            }
         }
 
         if (scoreText == null)
@@ -208,8 +217,16 @@ public class BoidGameManager2D : MonoBehaviour
 
     public void RestartLevel()
     {
-        Time.timeScale = 1f; 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name); 
+        applyHunterBuffs = false; 
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void RestartLevelHardMode()
+    {
+        applyHunterBuffs = true; 
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void LoadNextLevel()
