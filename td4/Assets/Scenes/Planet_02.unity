@@ -1604,8 +1604,11 @@ MonoBehaviour:
   lampVerticalOffset: -0.5
   lampDepthOffset: 2
   lampRotationCorrection: -90
-  targetTrackLength: 32
+  targetTrackLength: 58
   turnProbability: 0.987
+  maxConsecutiveStraights: 1
+  alternateTurnProbability: 0.8
+  minStraightsBetweenTurns: 0
   tileSize: 15
   trackScale: 1
   flyoverHeight: 20
@@ -2863,8 +2866,8 @@ MonoBehaviour:
   maxAngleScoreMultiplier: 3
   targetScore: 5000
   currentMultiplier: 1
-  maxMultiplier: 5
-  timeToNextMultiplier: 2.5
+  maxMultiplier: 3
+  timeToNextMultiplier: 4
   totalScorePrefix: 'Total: '
   currentDriftPrefix: 'Drift: '
   targetScorePrefix: 'Target: '

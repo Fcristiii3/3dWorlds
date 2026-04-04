@@ -325,7 +325,9 @@ public sealed class Planet2ProceduralTrackGenerator
             Vector2Int travelDirection = currentCell - previousCell;
             Vector3 forward = GridToWorldDirection(travelDirection);
             bool isStartFinish = currentCellIndex == 0;
-            Vector3 triggerPosition = (GridToWorld(previousCell) + GridToWorld(currentCell)) * 0.5f;
+            Vector3 triggerPosition = isStartFinish
+                ? GridToWorld(currentCell)
+                : (GridToWorld(previousCell) + GridToWorld(currentCell)) * 0.5f;
             triggerPosition.y = checkpointHeight * 0.5f;
 
             GameObject checkpointObject = new GameObject(isStartFinish ? "StartFinishCheckpoint" : $"Checkpoint_{sequenceIndex}");
@@ -336,6 +338,11 @@ public sealed class Planet2ProceduralTrackGenerator
             BoxCollider collider = checkpointObject.AddComponent<BoxCollider>();
             collider.isTrigger = true;
             collider.size = new Vector3(cellSize, checkpointHeight, checkpointThickness);
+            if (isStartFinish)
+            {
+                // Place the trigger so the approach-side face sits on the visual checkerboard line.
+                collider.center = Vector3.forward * (checkpointThickness * 0.5f);
+            }
 
             Checkpoint checkpoint = checkpointObject.AddComponent<Checkpoint>();
             checkpoints.Add(checkpoint);
