@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class StorySequencer : MonoBehaviour
+public class StorySequencer2 : MonoBehaviour
 {
     [Header("Story Elements")]
     public AudioSource storytellerAudio;
@@ -14,7 +14,7 @@ public class StorySequencer : MonoBehaviour
     public CanvasGroup scene3_SoloPrincess;
 
     [Header("Settings")]
-    public float fadeSpeed = 1.5f; // How many seconds the fade takes
+    public float fadeSpeed = 1.5f; 
     public string gameSceneName = "YourGameplaySceneName";
 
     private void Start()
@@ -31,19 +31,11 @@ public class StorySequencer : MonoBehaviour
         if (storytellerAudio != null) storytellerAudio.Play();
 
         yield return StartCoroutine(FadeCanvas(scene1_PrincePrincess, 0f, 1f));
-        yield return new WaitForSeconds(6f); 
-        yield return StartCoroutine(FadeCanvas(scene1_PrincePrincess, 1f, 0f));
-
+        yield return new WaitForSeconds(3f); 
 
         yield return StartCoroutine(FadeCanvas(scene2_PrincessWalle, 0f, 1f));
-        yield return new WaitForSeconds(7f); 
-        yield return StartCoroutine(FadeCanvas(scene2_PrincessWalle, 1f, 0f));
+        yield return new WaitForSeconds(4f); 
 
-
-        yield return StartCoroutine(FadeCanvas(scene3_SoloPrincess, 0f, 1f));
-        yield return new WaitForSeconds(5f); 
-
-        // The story is over, warp to the game!
         SceneManager.LoadScene(gameSceneName);
     }
 

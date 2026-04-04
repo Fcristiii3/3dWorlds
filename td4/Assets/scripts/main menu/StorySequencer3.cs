@@ -3,18 +3,18 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class StorySequencer : MonoBehaviour
+public class StorySequencer4 : MonoBehaviour
 {
     [Header("Story Elements")]
     public AudioSource storytellerAudio;
 
-    [Header("Your 3 Scenes (Drag Canvas Groups here)")]
+    [Header("Scenes")]
     public CanvasGroup scene1_PrincePrincess;
     public CanvasGroup scene2_PrincessWalle;
     public CanvasGroup scene3_SoloPrincess;
 
     [Header("Settings")]
-    public float fadeSpeed = 1.5f; // How many seconds the fade takes
+    public float fadeSpeed = 1.5f;
     public string gameSceneName = "YourGameplaySceneName";
 
     private void Start()
@@ -31,19 +31,12 @@ public class StorySequencer : MonoBehaviour
         if (storytellerAudio != null) storytellerAudio.Play();
 
         yield return StartCoroutine(FadeCanvas(scene1_PrincePrincess, 0f, 1f));
-        yield return new WaitForSeconds(6f); 
-        yield return StartCoroutine(FadeCanvas(scene1_PrincePrincess, 1f, 0f));
-
+        yield return StartCoroutine(ZoomInAndFadeOut(scene1_PrincePrincess, 2f, 6f));
+        yield return new WaitForSeconds(1f);
 
         yield return StartCoroutine(FadeCanvas(scene2_PrincessWalle, 0f, 1f));
-        yield return new WaitForSeconds(7f); 
-        yield return StartCoroutine(FadeCanvas(scene2_PrincessWalle, 1f, 0f));
 
-
-        yield return StartCoroutine(FadeCanvas(scene3_SoloPrincess, 0f, 1f));
-        yield return new WaitForSeconds(5f); 
-
-        // The story is over, warp to the game!
+        yield return new WaitForSeconds(8f);
         SceneManager.LoadScene(gameSceneName);
     }
 
@@ -60,7 +53,35 @@ public class StorySequencer : MonoBehaviour
             yield return null;
         }
 
-        cg.alpha = endAlpha; 
+        cg.alpha = endAlpha;
+    }
+
+    private IEnumerator ZoomInAndFadeOut(CanvasGroup cg, float duration, float targetScale)
+    {
+        if (cg == null) yield break;
+
+        RectTransform rect = cg.GetComponent<RectTransform>();
+        if (rect == null) yield break;
+
+        Vector3 originalScale = rect.localScale;
+        Vector3 finalScale = new Vector3(targetScale, targetScale, 1f);
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float percent = elapsedTime / duration;
+
+            rect.localScale = Vector3.Lerp(originalScale, finalScale, percent);
+
+            cg.alpha = Mathf.Lerp(1f, 0f, percent);
+
+            yield return null;
+        }
+
+        rect.localScale = finalScale;
+        cg.alpha = 0f;
     }
 
     private void Update()

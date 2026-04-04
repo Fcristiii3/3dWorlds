@@ -233,7 +233,7 @@ public class BoidGameManager2D : MonoBehaviour
     {
         Time.timeScale = 1f; 
         Debug.Log("Go Next Clicked!");
-        // You can replace the Debug.Log with: SceneManager.LoadScene("NameOfYourNextScene");
+        SceneManager.LoadScene("Story_03");
     }
 
     public int EatBoidsWithin(Vector2 center, float radius)
