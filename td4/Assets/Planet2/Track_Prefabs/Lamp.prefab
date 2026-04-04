@@ -193,12 +193,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LampFlicker
   lampLight: {fileID: 2370036031425714749}
+  player: {fileID: 0}
   chanceSteady: 0.706
-  chanceFlicker: 0.303
-  chanceDead: 0.1
+  chanceFlicker: 0.216
+  chanceReactive: 0.1
   flickerChance: 0.35
   minFlickerDelay: 0.03
   maxFlickerDelay: 0.12
+  activationDistance: 18
 --- !u!1 &6278843436803588733
 GameObject:
   m_ObjectHideFlags: 0

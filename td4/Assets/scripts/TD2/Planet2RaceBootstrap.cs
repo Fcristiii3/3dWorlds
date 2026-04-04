@@ -28,6 +28,12 @@ public class Planet2RaceBootstrap : MonoBehaviour
     [SerializeField] private int targetTrackLength = 32;
     [Range(0f, 1f)]
     [SerializeField] private float turnProbability = 0.75f;
+    [Min(0)]
+    [SerializeField] private int maxConsecutiveStraights = 1;
+    [Range(0f, 1f)]
+    [SerializeField] private float alternateTurnProbability = 0.8f;
+    [Min(0)]
+    [SerializeField] private int minStraightsBetweenTurns = 0;
 
     [Header("Track Scaling")]
     [Min(0.1f)]
@@ -84,7 +90,10 @@ public class Planet2RaceBootstrap : MonoBehaviour
             new Planet2LoopBuilder.Settings
             {
                 targetTrackLength = targetTrackLength,
-                turnProbability = turnProbability
+                turnProbability = turnProbability,
+                maxConsecutiveStraights = maxConsecutiveStraights,
+                alternateTurnProbability = alternateTurnProbability,
+                minStraightsBetweenTurns = minStraightsBetweenTurns
             });
 
         Planet2LoopBuilder.Result layout = loopBuilder.Generate();

@@ -18,6 +18,9 @@ public sealed class Planet2LoopBuilder
         public int layoutAttempts = 8;
         public int targetTrackLength = 32;
         public float turnProbability = 0.75f;
+        public int maxConsecutiveStraights = 1;
+        public float alternateTurnProbability = 0.8f;
+        public int minStraightsBetweenTurns = 0;
         public bool useRandomSeed = true;
         public int seed;
     }
@@ -49,6 +52,24 @@ public sealed class Planet2LoopBuilder
         public Vector2Int Direction { get; }
     }
 
+    private enum TurnSense
+    {
+        Left,
+        Right
+    }
+
+    private readonly struct TurnChoice
+    {
+        public TurnChoice(Vector2Int perpendicular, TurnSense turnSense)
+        {
+            Perpendicular = perpendicular;
+            TurnSense = turnSense;
+        }
+
+        public Vector2Int Perpendicular { get; }
+        public TurnSense TurnSense { get; }
+    }
+
     private static readonly Vector2Int[] CardinalDirections =
     {
         Vector2Int.up,
@@ -74,14 +95,17 @@ public sealed class Planet2LoopBuilder
         for (int attempt = 0; attempt < Mathf.Max(1, settings.layoutAttempts); attempt++)
         {
             List<Vector2Int> candidate = CreateSeedLoop(targetTrackLength, turnBias);
+            TurnSense? lastTurnSense = null;
 
             for (int pass = 0; pass < Mathf.Max(0, settings.expansionPasses) && candidate.Count < targetTrackLength; pass++)
             {
                 if (random.NextDouble() <= turnBias)
                 {
-                    TryExpandLoop(candidate, targetTrackLength, turnBias);
+                    TryExpandLoop(candidate, targetTrackLength, turnBias, ref lastTurnSense);
                 }
             }
+
+            ApplySerpentineRules(candidate, targetTrackLength, turnBias, ref lastTurnSense);
 
             float candidateScore = ScoreLoop(candidate, targetTrackLength, turnBias);
             if (bestLoop == null || candidateScore > bestScore)
@@ -208,7 +232,7 @@ public sealed class Planet2LoopBuilder
         return loop;
     }
 
-    private bool TryExpandLoop(List<Vector2Int> sourceLoop, int targetTrackLength, float turnBias)
+    private bool TryExpandLoop(List<Vector2Int> sourceLoop, int targetTrackLength, float turnBias, ref TurnSense? lastTurnSense)
     {
         List<Vector2Int> workingLoop = RotateLoop(sourceLoop, random.Next(sourceLoop.Count));
         List<StraightRun> runs = GetStraightRuns(workingLoop, GetMinimumStraightEdgeCount(turnBias));
@@ -216,40 +240,11 @@ public sealed class Planet2LoopBuilder
 
         foreach (StraightRun run in runs)
         {
-            var perpendiculars = new List<Vector2Int>
+            if (TryExpandRun(workingLoop, run, targetTrackLength, turnBias, ref lastTurnSense, out List<Vector2Int> expandedLoop))
             {
-                PerpendicularLeft(run.Direction),
-                PerpendicularRight(run.Direction)
-            };
-
-            Shuffle(perpendiculars);
-
-            List<int> offsets = new List<int>();
-            for (int offset = 1; offset <= GetMaximumOffset(turnBias); offset++)
-            {
-                offsets.Add(offset);
-            }
-
-            if (turnBias >= 0.5f)
-            {
-                offsets.Sort();
-            }
-            else
-            {
-                offsets.Sort((first, second) => second.CompareTo(first));
-            }
-
-            foreach (Vector2Int perpendicular in perpendiculars)
-            {
-                foreach (int offset in offsets)
-                {
-                    if (TryBuildExpandedLoop(workingLoop, run, perpendicular, offset, targetTrackLength, out List<Vector2Int> expandedLoop))
-                    {
-                        sourceLoop.Clear();
-                        sourceLoop.AddRange(expandedLoop);
-                        return true;
-                    }
-                }
+                sourceLoop.Clear();
+                sourceLoop.AddRange(expandedLoop);
+                return true;
             }
         }
 
@@ -276,6 +271,102 @@ public sealed class Planet2LoopBuilder
 
         expandedLoop = candidate;
         return true;
+    }
+
+    private void ApplySerpentineRules(List<Vector2Int> sourceLoop, int targetTrackLength, float turnBias, ref TurnSense? lastTurnSense)
+    {
+        int safetyPassCount = Mathf.Max(4, settings.expansionPasses * 3);
+
+        for (int pass = 0; pass < safetyPassCount; pass++)
+        {
+            StraightRun? violatingRun = FindLongestViolatingStraightRun(sourceLoop);
+            if (!violatingRun.HasValue)
+            {
+                break;
+            }
+
+            if (!TryBreakStraightRun(sourceLoop, violatingRun.Value, targetTrackLength, turnBias, ref lastTurnSense))
+            {
+                break;
+            }
+        }
+    }
+
+    private StraightRun? FindLongestViolatingStraightRun(List<Vector2Int> loop)
+    {
+        List<StraightRun> runs = GetStraightRuns(loop, 2);
+        StraightRun? longestRun = null;
+        int longestStraightCount = -1;
+
+        foreach (StraightRun run in runs)
+        {
+            int consecutiveStraightCount = GetConsecutiveStraightCount(run);
+            if (consecutiveStraightCount <= GetMaxConsecutiveStraights())
+            {
+                continue;
+            }
+
+            if (consecutiveStraightCount > longestStraightCount)
+            {
+                longestStraightCount = consecutiveStraightCount;
+                longestRun = run;
+            }
+        }
+
+        return longestRun;
+    }
+
+    private bool TryBreakStraightRun(List<Vector2Int> sourceLoop, StraightRun fullRun, int targetTrackLength, float turnBias, ref TurnSense? lastTurnSense)
+    {
+        int subrunCellCount = Mathf.Max(2, GetMaxConsecutiveStraights() + 2);
+        int fullRunCellCount = fullRun.EndCellIndex - fullRun.StartCellIndex + 1;
+        if (fullRunCellCount < subrunCellCount)
+        {
+            return false;
+        }
+
+        List<int> candidateStartIndices = BuildSubrunStartIndices(fullRun.StartCellIndex, fullRun.EndCellIndex, subrunCellCount);
+
+        foreach (int startIndex in candidateStartIndices)
+        {
+            var subrun = new StraightRun(startIndex, startIndex + subrunCellCount - 1, fullRun.Direction);
+            if (TryExpandRun(sourceLoop, subrun, targetTrackLength, turnBias, ref lastTurnSense, out List<Vector2Int> expandedLoop))
+            {
+                sourceLoop.Clear();
+                sourceLoop.AddRange(expandedLoop);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool TryExpandRun(
+        List<Vector2Int> sourceLoop,
+        StraightRun run,
+        int targetTrackLength,
+        float turnBias,
+        ref TurnSense? lastTurnSense,
+        out List<Vector2Int> expandedLoop)
+    {
+        expandedLoop = null;
+
+        List<TurnChoice> turnChoices = BuildPreferredTurnChoices(run.Direction, lastTurnSense);
+        List<int> offsets = BuildOffsetOrder(turnBias);
+
+        foreach (TurnChoice turnChoice in turnChoices)
+        {
+            foreach (int offset in offsets)
+            {
+                if (TryBuildExpandedLoop(sourceLoop, run, turnChoice.Perpendicular, offset, targetTrackLength, out expandedLoop))
+                {
+                    lastTurnSense = turnChoice.TurnSense;
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private static List<Vector2Int> BuildExpandedSegment(
@@ -336,12 +427,117 @@ public sealed class Planet2LoopBuilder
 
     private int GetMaximumOffset(float turnBias)
     {
-        return Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(settings.maxOffset, 1f, turnBias)));
+        int biasedMaximumOffset = Mathf.Max(1, Mathf.RoundToInt(Mathf.Lerp(settings.maxOffset, 1f, turnBias)));
+        return Mathf.Max(GetMinimumOffset(), biasedMaximumOffset);
     }
 
     private int GetMinimumStraightEdgeCount(float turnBias)
     {
         return Mathf.Max(2, Mathf.RoundToInt(Mathf.Lerp(settings.minStraightEdgeCount + 1, 2f, turnBias)));
+    }
+
+    private int GetMinimumOffset()
+    {
+        return Mathf.Max(1, settings.minStraightsBetweenTurns + 1);
+    }
+
+    private int GetMaxConsecutiveStraights()
+    {
+        return Mathf.Max(0, settings.maxConsecutiveStraights);
+    }
+
+    private static int GetConsecutiveStraightCount(StraightRun run)
+    {
+        return Mathf.Max(0, (run.EndCellIndex - run.StartCellIndex + 1) - 2);
+    }
+
+    private List<int> BuildOffsetOrder(float turnBias)
+    {
+        int minimumOffset = GetMinimumOffset();
+        int maximumOffset = GetMaximumOffset(turnBias);
+        var offsets = new List<int>(maximumOffset - minimumOffset + 1);
+
+        for (int offset = minimumOffset; offset <= maximumOffset; offset++)
+        {
+            offsets.Add(offset);
+        }
+
+        if (turnBias >= 0.5f)
+        {
+            offsets.Sort();
+        }
+        else
+        {
+            offsets.Sort((first, second) => second.CompareTo(first));
+        }
+
+        return offsets;
+    }
+
+    private List<TurnChoice> BuildPreferredTurnChoices(Vector2Int travelDirection, TurnSense? lastTurnSense)
+    {
+        TurnSense preferredTurnSense = ChoosePreferredTurnSense(lastTurnSense);
+        TurnSense fallbackTurnSense = preferredTurnSense == TurnSense.Left ? TurnSense.Right : TurnSense.Left;
+
+        return new List<TurnChoice>
+        {
+            CreateTurnChoice(travelDirection, preferredTurnSense),
+            CreateTurnChoice(travelDirection, fallbackTurnSense)
+        };
+    }
+
+    private TurnSense ChoosePreferredTurnSense(TurnSense? lastTurnSense)
+    {
+        if (!lastTurnSense.HasValue)
+        {
+            return random.NextDouble() < 0.5d ? TurnSense.Left : TurnSense.Right;
+        }
+
+        if (random.NextDouble() < Mathf.Clamp01(settings.alternateTurnProbability))
+        {
+            return lastTurnSense.Value == TurnSense.Left ? TurnSense.Right : TurnSense.Left;
+        }
+
+        return lastTurnSense.Value;
+    }
+
+    private static TurnChoice CreateTurnChoice(Vector2Int travelDirection, TurnSense turnSense)
+    {
+        return turnSense == TurnSense.Left
+            ? new TurnChoice(PerpendicularLeft(travelDirection), TurnSense.Left)
+            : new TurnChoice(PerpendicularRight(travelDirection), TurnSense.Right);
+    }
+
+    private static List<int> BuildSubrunStartIndices(int runStartIndex, int runEndIndex, int subrunCellCount)
+    {
+        int minimumStartIndex = runStartIndex;
+        int maximumStartIndex = runEndIndex - subrunCellCount + 1;
+        var startIndices = new List<int>();
+
+        if (maximumStartIndex < minimumStartIndex)
+        {
+            return startIndices;
+        }
+
+        int centeredStartIndex = (minimumStartIndex + maximumStartIndex) / 2;
+        startIndices.Add(centeredStartIndex);
+
+        for (int offset = 1; startIndices.Count < (maximumStartIndex - minimumStartIndex + 1); offset++)
+        {
+            int leftIndex = centeredStartIndex - offset;
+            if (leftIndex >= minimumStartIndex)
+            {
+                startIndices.Add(leftIndex);
+            }
+
+            int rightIndex = centeredStartIndex + offset;
+            if (rightIndex <= maximumStartIndex)
+            {
+                startIndices.Add(rightIndex);
+            }
+        }
+
+        return startIndices;
     }
 
     private float ScoreLoop(List<Vector2Int> loop, int targetTrackLength, float turnBias)
@@ -354,7 +550,9 @@ public sealed class Planet2LoopBuilder
         float lengthScore = -lengthError * 5f;
         float turnScore = cornerCount * Mathf.Lerp(1.5f, 4f, turnBias);
         float footprintScore = -footprintArea * 0.15f;
-        return lengthScore + turnScore + footprintScore;
+        float straightPenalty = -GetExcessStraightPenalty(loop) * Mathf.Lerp(4f, 10f, turnBias);
+        float turnAlternationScore = ScoreTurnAlternation(loop) * Mathf.Lerp(0.5f, 2f, Mathf.Clamp01(settings.alternateTurnProbability));
+        return lengthScore + turnScore + footprintScore + straightPenalty + turnAlternationScore;
     }
 
     private static int CountCorners(List<Vector2Int> loop)
@@ -377,6 +575,61 @@ public sealed class Planet2LoopBuilder
         }
 
         return corners;
+    }
+
+    private float GetExcessStraightPenalty(List<Vector2Int> loop)
+    {
+        float excessStraightPenalty = 0f;
+        List<StraightRun> runs = GetStraightRuns(loop, 2);
+
+        foreach (StraightRun run in runs)
+        {
+            int excessStraights = Mathf.Max(0, GetConsecutiveStraightCount(run) - GetMaxConsecutiveStraights());
+            excessStraightPenalty += excessStraights;
+        }
+
+        return excessStraightPenalty;
+    }
+
+    private float ScoreTurnAlternation(List<Vector2Int> loop)
+    {
+        List<TurnSense> turnSequence = GetTurnSequence(loop);
+        if (turnSequence.Count < 2)
+        {
+            return 0f;
+        }
+
+        float alternationScore = 0f;
+        for (int i = 1; i < turnSequence.Count; i++)
+        {
+            alternationScore += turnSequence[i] != turnSequence[i - 1] ? 1f : -0.5f;
+        }
+
+        return alternationScore;
+    }
+
+    private static List<TurnSense> GetTurnSequence(List<Vector2Int> loop)
+    {
+        var turnSequence = new List<TurnSense>();
+
+        for (int i = 0; i < loop.Count; i++)
+        {
+            Vector2Int previous = loop[(i - 1 + loop.Count) % loop.Count];
+            Vector2Int current = loop[i];
+            Vector2Int next = loop[(i + 1) % loop.Count];
+
+            Vector2Int incoming = current - previous;
+            Vector2Int outgoing = next - current;
+            if (incoming == outgoing)
+            {
+                continue;
+            }
+
+            int crossProduct = (incoming.x * outgoing.y) - (incoming.y * outgoing.x);
+            turnSequence.Add(crossProduct > 0 ? TurnSense.Left : TurnSense.Right);
+        }
+
+        return turnSequence;
     }
 
     private List<StraightRun> GetStraightRuns(List<Vector2Int> loop, int minimumStraightEdgeCount)
