@@ -262,8 +262,11 @@ public class BoidAgent2D : Agent
         isDead = true;
         AddReward(-1f);
 
-        Renderer r = GetComponent<Renderer>();
-        if (r != null) r.enabled = false;
+        Renderer[] allRenderers = GetComponentsInChildren<Renderer>();
+        foreach (Renderer r in allRenderers)
+        {
+            r.enabled = false;
+        }
 
         if (rb != null)
         {

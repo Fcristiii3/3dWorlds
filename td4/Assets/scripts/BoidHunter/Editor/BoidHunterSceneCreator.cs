@@ -43,7 +43,6 @@ public static class BoidHunterSceneCreator
         manager.worldMin = new Vector2(-24f, -13f);
         manager.worldMax = new Vector2(24f, 13f);
         manager.startingBoidCount = 70;
-        manager.boidVisualSize = 0.45f;
         return manager;
     }
 

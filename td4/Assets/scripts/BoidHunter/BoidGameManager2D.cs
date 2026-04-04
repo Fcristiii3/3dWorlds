@@ -16,8 +16,7 @@ public class BoidGameManager2D : MonoBehaviour
 
     [Header("Boid Spawn")]
     public int startingBoidCount = 60;
-    public float boidVisualSize = 0.45f;
-    public Color boidColor = new Color(0.35f, 0.75f, 1f, 1f);
+    public GameObject boidPrefab;
     public BoidAgent2D.BoidControlMode boidControlMode = BoidAgent2D.BoidControlMode.ClassicHeuristic;
 
     [Header("Training")]
@@ -34,6 +33,7 @@ public class BoidGameManager2D : MonoBehaviour
     public bool hunterAutoControl;
 
     [Header("UI")]
+    public string teamName;
     public Text scoreText;
     public Text timerText;
     public GameObject gameOverPanel;
@@ -76,10 +76,7 @@ public class BoidGameManager2D : MonoBehaviour
 
     public void StartGame()
     {
-        if (IsGameRunning)
-        {
-            return;
-        }
+        if (IsGameRunning) return;
 
         IsGameRunning = true;
         eatenCount = 0;
@@ -92,34 +89,38 @@ public class BoidGameManager2D : MonoBehaviour
             if (ghost != null)
             {
                 ghost.gameObject.SetActive(true);
+                ghost.isDead = false;
+                Renderer[] rs = ghost.GetComponentsInChildren<Renderer>();
+                foreach (var r in rs) r.enabled = true;
+
                 boids.Add(ghost);
             }
         }
 
         int targetCount = Mathf.Max(2, startingBoidCount);
         int needed = targetCount - boids.Count;
-        
         for (int i = 0; i < needed; i++)
         {
             SpawnBoid();
         }
 
+
         foreach (var boid in boids)
         {
             if (boid == null) continue;
+
             boid.transform.position = transform.position + new Vector3(
                 Random.Range(worldMin.x, worldMax.x),
                 Random.Range(worldMin.y, worldMax.y),
                 0f
             );
-            
+
             Rigidbody2D boidRb = boid.GetComponent<Rigidbody2D>();
             if (boidRb != null)
             {
                 boidRb.linearVelocity = Random.insideUnitCircle.normalized * boid.moveSpeed;
             }
         }
-
         RefreshScoreUI();
     }
 
@@ -250,87 +251,30 @@ public class BoidGameManager2D : MonoBehaviour
 
     private void SpawnBoid()
     {
-        GameObject boidObject = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        Vector3 spawnPos = transform.position + new Vector3(
+            Random.Range(worldMin.x, worldMax.x),
+            Random.Range(worldMin.y, worldMax.y),
+            0f
+        );
+
+
+        GameObject boidObject = Instantiate(boidPrefab, spawnPos, Quaternion.identity);
         boidObject.name = "Boid";
         boidObject.tag = "Boid";
         boidObject.transform.SetParent(transform);
-        boidObject.SetActive(false);
 
-        Vector3 spawnPos = Vector3.zero;
-        int attempts = 0;
-        float safeDistance = 6f; 
-
-        while (attempts < 10)
-        {
-            spawnPos = transform.position + new Vector3(
-                Random.Range(worldMin.x, worldMax.x),
-                Random.Range(worldMin.y, worldMax.y),
-                0f
-            );
-            
-            if (Vector2.Distance(spawnPos, HunterPosition) > safeDistance) break;
-            attempts++;
-        }
-        
-        boidObject.transform.position = spawnPos;
-        boidObject.transform.localScale = Vector3.one * boidVisualSize;
-
-        Renderer boidRenderer = boidObject.GetComponent<Renderer>();
-        if (boidRenderer != null)
-        {
-            boidRenderer.material.color = boidColor;
-        }
-
-        Collider boidCollider = boidObject.GetComponent<Collider>();
-        if (boidCollider != null)
-        {
-            DestroyImmediate(boidCollider);
-        }
-
-        BoxCollider2D boidCollider2D = boidObject.AddComponent<BoxCollider2D>();
-        if (boidCollider2D != null)
-        {
-            boidCollider2D.isTrigger = true;
-        }
-
-        Rigidbody2D boidRb = boidObject.AddComponent<Rigidbody2D>();
-        boidRb.gravityScale = 0f;
-        boidRb.linearDamping = 0.2f;
-        boidRb.angularDamping = 0.2f;
-        boidRb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-
-        BoidAgent2D boid = boidObject.AddComponent<BoidAgent2D>();
+        BoidAgent2D boid = boidObject.GetComponent<BoidAgent2D>();
         boid.controlMode = boidControlMode;
         boid.Initialize(this, Random.insideUnitCircle.normalized);
 
         BehaviorParameters bp = boidObject.GetComponent<BehaviorParameters>();
         if (bp != null)
         {
-            if (boidControlMode == BoidAgent2D.BoidControlMode.ClassicHeuristic)
-            {
-                bp.BehaviorType = BehaviorType.HeuristicOnly;
-            }
-            else
-            {
-                if (!trainingMode && boidBrain != null)
-                {
-                    bp.Model = boidBrain;
-                    bp.BehaviorType = BehaviorType.InferenceOnly;
-                }
-                else if (!trainingMode && boidBrain == null)
-                {
-                    bp.BehaviorType = BehaviorType.HeuristicOnly;
-                }
-                else
-                {
-                    bp.BehaviorType = BehaviorType.Default;
-                }
-            }
+            bp.BehaviorType = (boidControlMode == BoidAgent2D.BoidControlMode.ClassicHeuristic)
+                ? BehaviorType.HeuristicOnly : (trainingMode ? BehaviorType.Default : BehaviorType.InferenceOnly);
         }
 
         boids.Add(boid);
-
-        boidObject.SetActive(true);
     }
 
     public void RemoveBoid(BoidAgent2D boid)
@@ -356,7 +300,7 @@ public class BoidGameManager2D : MonoBehaviour
         if (scoreText != null)
         {
             string timeStr = timerText == null ? $"   Time: {seconds}s" : "";
-            scoreText.text = $"Eaten: {eatenCount}   Remaining: {boids.Count}{timeStr}";
+            scoreText.text = $"{teamName}\nEaten: {eatenCount}   Remaining: {boids.Count}{timeStr}";
         }
     }
 
