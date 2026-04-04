@@ -194,13 +194,11 @@ public class HunterController2D : Agent
         }
         AddReward(maxProximityReward);
 
-        // Tiny penalty for time passing to encourage speed
         AddReward(-0.001f);
     }
 
     private void LateUpdate()
     {
-        // Boundary enforcement moved to OnActionReceived for maximum stability.
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

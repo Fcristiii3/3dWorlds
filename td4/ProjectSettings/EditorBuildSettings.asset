@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BoidHunter2D.unity
     guid: a6c9368e66a59324997c400adbabffca
+  - enabled: 1
+    path: Assets/Scenes/Story_01.unity
+    guid: b34d50ccd2900804f964f325a99bac04
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
