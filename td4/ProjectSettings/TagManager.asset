@@ -6,13 +6,16 @@ TagManager:
   tags:
   - AiCar
   - ai
+  - Boid
+  - Hunter
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - PlayerLayer
   - Water
   - UI
+  - AiLayer
   - Wall
   - 
   - 
@@ -40,6 +43,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: background
+    uniqueID: 3129775983
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

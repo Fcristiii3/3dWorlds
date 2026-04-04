@@ -10,14 +10,18 @@ public class HunterController2D : Agent
     [Header("Hunter Settings")]
     public float moveSpeed = 10f;
     public float eatRadius = 1f;
+    public float viewRadius = 15.8f;
     public Color hunterColor = new Color(1f, 0.45f, 0.3f, 1f);
     
     [Header("Controls")]
     public bool useAutoControl;
+    public bool isPlayerAgent;
 
     [Header("Testing & Debugging")]
     public bool useManualNormalization = true;
     public bool showDiagnostics = false;
+
+
 
     public BoidGameManager2D manager;
     private Rigidbody2D hunterRigidbody;
@@ -47,7 +51,7 @@ public class HunterController2D : Agent
 
     public override void Initialize()
     {
-        if (manager == null) manager = FindObjectOfType<BoidGameManager2D>();
+        if (manager == null) manager = GetComponentInParent<BoidGameManager2D>();
 
         Renderer hunterRenderer = GetComponent<Renderer>();
         if (hunterRenderer != null) hunterRenderer.material.color = hunterColor;
@@ -65,6 +69,10 @@ public class HunterController2D : Agent
         if (manager != null && manager.trainingMode)
         {
             if (behavior != null) behavior.BehaviorType = BehaviorType.Default;
+        }
+        else if (isPlayerAgent)
+        {
+            if (behavior != null) behavior.BehaviorType = BehaviorType.HeuristicOnly;
         }
         else
         {
@@ -87,7 +95,7 @@ public class HunterController2D : Agent
     {
         if (manager != null)
         {
-            transform.position = Vector3.zero;
+            transform.position = manager.transform.position;
         }
     }
 
@@ -107,8 +115,8 @@ public class HunterController2D : Agent
         {
             if (boid == null || boid.isDead) continue; 
             Vector2 offset = (Vector2)boid.transform.position - (Vector2)transform.position;
-            
-            if (offset.sqrMagnitude < 250f) // viewing distance
+
+            if (offset.sqrMagnitude < (viewRadius * viewRadius)) // viewing distance
             {
                 Rigidbody2D boidRb = boid.GetComponent<Rigidbody2D>();
                 
@@ -150,11 +158,19 @@ public class HunterController2D : Agent
         Vector2 fakeVelocity = input * moveSpeed;
         
         Vector2 pos = hunterRigidbody.position;
-        if (pos.x < manager.worldMin.x && fakeVelocity.x < 0) fakeVelocity.x = Mathf.Abs(fakeVelocity.x);
-        else if (pos.x > manager.worldMax.x && fakeVelocity.x > 0) fakeVelocity.x = -Mathf.Abs(fakeVelocity.x);
 
-        if (pos.y < manager.worldMin.y && fakeVelocity.y < 0) fakeVelocity.y = Mathf.Abs(fakeVelocity.y);
-        else if (pos.y > manager.worldMax.y && fakeVelocity.y > 0) fakeVelocity.y = -Mathf.Abs(fakeVelocity.y);
+
+        float globalMinX = manager.transform.position.x + manager.worldMin.x;
+        float globalMaxX = manager.transform.position.x + manager.worldMax.x;
+        float globalMinY = manager.transform.position.y + manager.worldMin.y;
+        float globalMaxY = manager.transform.position.y + manager.worldMax.y;
+
+        // FIX: Compare against the global boundaries
+        if (pos.x < globalMinX && fakeVelocity.x < 0) fakeVelocity.x = Mathf.Abs(fakeVelocity.x);
+        else if (pos.x > globalMaxX && fakeVelocity.x > 0) fakeVelocity.x = -Mathf.Abs(fakeVelocity.x);
+
+        if (pos.y < globalMinY && fakeVelocity.y < 0) fakeVelocity.y = Mathf.Abs(fakeVelocity.y);
+        else if (pos.y > globalMaxY && fakeVelocity.y > 0) fakeVelocity.y = -Mathf.Abs(fakeVelocity.y);
 
         hunterRigidbody.linearVelocity = fakeVelocity;
 
@@ -178,13 +194,11 @@ public class HunterController2D : Agent
         }
         AddReward(maxProximityReward);
 
-        // Tiny penalty for time passing to encourage speed
         AddReward(-0.001f);
     }
 
     private void LateUpdate()
     {
-        // Boundary enforcement moved to OnActionReceived for maximum stability.
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
