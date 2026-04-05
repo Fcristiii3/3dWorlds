@@ -1049,7 +1049,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 80.03931, y: -24.480469}
+  m_AnchoredPosition: {x: 87, y: -33}
   m_SizeDelta: {x: 160.0824, y: 48.9616}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &353531453 stripped
@@ -1225,7 +1225,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 951, y: -1026}
+  m_AnchoredPosition: {x: 951, y: -87.99994}
   m_SizeDelta: {x: 160.0824, y: 48.9616}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &549879319
@@ -1259,7 +1259,7 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 0
+  m_enableVertexGradient: 1
   m_colorMode: 3
   m_fontColorGradient:
     topLeft: {r: 1, g: 1, b: 1, a: 1}
@@ -2148,9 +2148,9 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 6442ee1b2a5b17d449a82c2d8dc922ad, type: 3}
+  m_Resource: {fileID: 8300000, guid: 5f03a1799104c304da2e990cb8d6a988, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -2262,7 +2262,7 @@ MonoBehaviour:
   orbitCenterMarker: {fileID: 696402429}
   targetRadius: 0
   radiusTolerance: 20
-  exclusionRadius: 25
+  exclusionRadius: 27
   tileSize: 15
   trackScale: 1
   flyoverHeight: 20
@@ -2784,7 +2784,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1152, y: -1026}
+  m_AnchoredPosition: {x: 1152, y: -88}
   m_SizeDelta: {x: 160.0824, y: 48.9616}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1473701292
@@ -3824,6 +3824,10 @@ PrefabInstance:
     - target: {fileID: 4775853299366505780, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
       propertyPath: steerSpeed
       value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 4775853299366505780, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
+      propertyPath: forwardMoveSpeed
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 4775853299366505780, guid: 61d487a1e37331f41809ee32cc6468ae, type: 3}
       propertyPath: backwardMoveSpeed

@@ -782,7 +782,8 @@ public sealed class Planet2LoopBuilder
         int offsetX = Mathf.RoundToInt((minX + maxX) * 0.5f);
         int offsetY = Mathf.RoundToInt((minY + maxY) * 0.5f);
         float tileSize = Mathf.Max(0.1f, settings.tileSize);
-        float exclusionRadiusSqr = settings.exclusionRadius * settings.exclusionRadius;
+        float effectiveExclusionRadius = GetEffectiveExclusionRadius();
+        float exclusionRadiusSqr = effectiveExclusionRadius * effectiveExclusionRadius;
 
         for (int i = 0; i < loop.Count; i++)
         {
@@ -797,6 +798,12 @@ public sealed class Planet2LoopBuilder
         }
 
         return false;
+    }
+
+    private float GetEffectiveExclusionRadius()
+    {
+        float footprintPadding = Mathf.Max(0f, settings.tileSize * 0.5f);
+        return Mathf.Max(0f, settings.exclusionRadius) + footprintPadding;
     }
 
     private bool HasOrbitPreference()

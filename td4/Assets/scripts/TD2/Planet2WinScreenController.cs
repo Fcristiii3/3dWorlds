@@ -134,7 +134,7 @@ public class Planet2WinScreenController : MonoBehaviour
         restartButton = CreateButton("Restart", panel.transform, defaultFont, new Vector2(0f, -10f), new Color(0.18f, 0.52f, 0.2f));
         restartButton.onClick.AddListener(RestartRace);
 
-        nextPlanetButton = CreateButton("Next Planet", panel.transform, defaultFont, new Vector2(0f, -110f), new Color(0.18f, 0.32f, 0.55f));
+        nextPlanetButton = CreateButton("Next", panel.transform, defaultFont, new Vector2(0f, -110f), new Color(0.18f, 0.32f, 0.55f));
         nextPlanetButton.onClick.AddListener(NextPlanet);
 
         panel.SetActive(false);
