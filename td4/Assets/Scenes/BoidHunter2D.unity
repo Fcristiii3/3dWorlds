@@ -494,7 +494,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 1ecba6fd390ff55459d72e97ae8a5aad, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.5
+  m_Volume: 0.126
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -2178,12 +2178,12 @@ MonoBehaviour:
   worldMax: {x: 24, y: 13}
   startingBoidCount: 70
   boidPrefab: {fileID: 8940948643966707062, guid: 5af151da97ec445449e530d12733e2b0, type: 3}
-  boidControlMode: 0
+  boidControlMode: 1
   trainingMode: 1
   matchDuration: 60
   timeRemaining: 0
-  boidBrain: {fileID: 0}
-  hunterBrain: {fileID: 5022602860645237092, guid: a0387c9649f6ea44faa7a21e558a0975, type: 3}
+  boidBrain: {fileID: 5022602860645237092, guid: a028d0e2fa9676a40a5c01c2a0dc02f8, type: 3}
+  hunterBrain: {fileID: 5022602860645237092, guid: b5a904ba4e288cb43a67c55da2154ac8, type: 3}
   hunter: {fileID: 1207949023}
   hunterAutoControl: 1
   teamName: Eve
