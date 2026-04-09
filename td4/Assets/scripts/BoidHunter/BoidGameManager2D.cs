@@ -41,6 +41,9 @@ public class BoidGameManager2D : MonoBehaviour
     public Text timerText;
     public GameObject gameOverPanel;
 
+    [Header("Camera Setup")]
+    public Camera myWorldCamera;
+
     private readonly List<BoidAgent2D> boids = new List<BoidAgent2D>();
     private readonly List<BoidAgent2D> graveyard = new List<BoidAgent2D>();
     public List<BoidAgent2D> Boids => boids;
@@ -53,6 +56,17 @@ public class BoidGameManager2D : MonoBehaviour
 
     private void Start()
     {
+
+        float baseMaxY = myWorldCamera.orthographicSize;
+        float baseMaxX = baseMaxY * myWorldCamera.aspect;
+
+        float safeMaxY = baseMaxY * 0.46f;
+
+        float safeMaxX = baseMaxX * 0.95f;
+
+        worldMin = new Vector2(-safeMaxX, -safeMaxY);
+        worldMax = new Vector2(safeMaxX, safeMaxY);
+
         Application.runInBackground = true;
 
         if (trainingMode)
@@ -339,9 +353,21 @@ public class BoidGameManager2D : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Vector3 center = transform.position + new Vector3((worldMin.x + worldMax.x) * 0.5f, (worldMin.y + worldMax.y) * 0.5f, 0f);
-        Vector3 size = new Vector3(worldMax.x - worldMin.x, worldMax.y - worldMin.y, 0.1f);
-        Gizmos.color = Color.yellow;
+        if (myWorldCamera == null) return;
+
+        float baseMaxY = myWorldCamera.orthographicSize;
+        float baseMaxX = baseMaxY * myWorldCamera.aspect;
+
+        float safeMaxY = baseMaxY * 0.80f;
+        float safeMaxX = baseMaxX * 0.95f;
+
+        Gizmos.color = Color.black;
+
+        Vector3 center = myWorldCamera.transform.position;
+        center.z = 0f; 
+
+        Vector3 size = new Vector3(safeMaxX * 2f, safeMaxY * 2f, 0.1f);
+
         Gizmos.DrawWireCube(center, size);
     }
 

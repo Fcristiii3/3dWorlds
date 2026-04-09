@@ -424,7 +424,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::followPlayer
   player: {fileID: 1476698692119602126}
-  marginFromPlayer: {x: 0, y: 15, z: -10}
+  distance: 6
+  height: 2.5
+  positionDamping: 10
+  rotationDamping: 5
+  lookAtOffset: {x: 0, y: 1, z: 0}
 --- !u!95 &330585549
 Animator:
   serializedVersion: 7
@@ -1190,8 +1194,10 @@ MonoBehaviour:
   - {fileID: 353531453}
   lapTracker: {fileID: 1838426620}
   tricolorLights: {fileID: 1004224661}
+  racingLights: []
   cameraIntroAnimator: {fileID: 330585549}
   followPlayerCamera: {fileID: 330585547}
+  introSkipUI: {fileID: 0}
   audioSource: {fileID: 1046798169}
   lowBeep: {fileID: 8300000, guid: 9c5c241514eaf2043a71bb05f406cd81, type: 3}
   highBeep: {fileID: 8300000, guid: aba26e9fb2231eb46bb34a2965ea0359, type: 3}
@@ -2011,6 +2017,7 @@ MonoBehaviour:
   - {fileID: 1063598853}
   totalLaps: 3
   ui: {fileID: 1053914516}
+  driftScoringScript: {fileID: 0}
   onPlayerFinished:
     m_PersistentCalls:
       m_Calls:

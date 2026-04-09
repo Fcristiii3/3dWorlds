@@ -1080,14 +1080,14 @@ RectTransform:
   m_GameObject: {fileID: 1581377657}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 11.80177, y: 10.431, z: 10.431}
+  m_LocalScale: {x: 29.37009, y: 13.392274, z: 7.4068446}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1744413276}
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1286, y: -825}
+  m_AnchoredPosition: {x: -84, y: -2737}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!199 &1581377659
@@ -1178,7 +1178,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1581377657}
   serializedVersion: 8
-  lengthInSec: 5
+  lengthInSec: 1.39
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -1253,7 +1253,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 4
+      scalar: 4.95
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -1748,7 +1748,7 @@ ParticleSystem:
     gravityModifier:
       serializedVersion: 2
       minMaxState: 0
-      scalar: -2
+      scalar: 2
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -6040,8 +6040,8 @@ Canvas:
   m_GameObject: {fileID: 1744413272}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 1009890533}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1

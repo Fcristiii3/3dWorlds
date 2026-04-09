@@ -1616,6 +1616,7 @@ MonoBehaviour:
   scoreText: {fileID: 1808396739}
   timerText: {fileID: 0}
   gameOverPanel: {fileID: 441694249}
+  myWorldCamera: {fileID: 809373996}
 --- !u!4 &1403619962
 Transform:
   m_ObjectHideFlags: 0
@@ -2190,6 +2191,7 @@ MonoBehaviour:
   scoreText: {fileID: 1035072160}
   timerText: {fileID: 0}
   gameOverPanel: {fileID: 441694249}
+  myWorldCamera: {fileID: 1553737601}
 --- !u!4 &1846218207
 Transform:
   m_ObjectHideFlags: 0
